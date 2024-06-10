@@ -72,7 +72,7 @@ function createCatCard(text, isHomepage) {
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
   const permissionsBtn = CardService.newTextButton()
-    .setText('Permmissions')
+    .setText('Permissions')
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
   const buttonSet = CardService.newButtonSet()
@@ -106,11 +106,42 @@ function createCatCard(text, isHomepage) {
     card.setPeekCardHeader(peekHeader)
   }
 
-  const headerTxt = CardService.newCardSection().setHeader("Options")
-  const headerSection = CardService.newCardSection().addWidget(buttonSet).setHeader(headerTxt);
-  const homeCard = CardService.newCardBuilder().addSection(headerSection);
+  const btnsSection = CardService.newCardSection().addWidget(buttonSet);
+  const homeCard = CardService.newCardBuilder().addSection(btnsSection);
 
-  return homeCard.build();
+
+  // Folder:
+  // -Copy all items in a folder
+  // -Copy folder structure
+
+  // Share:
+  // "Select the folders and files that you want to share."
+
+  // Permissions:
+  // -Revoke access
+  // -Update permissions
+  // -Search for user
+
+  const headerCard = CardService.newCardBuilder()
+    .setHeader(CardService.newCardHeader().setTitle("Options"))
+    .build();
+  const folderCopyCard = CardService.newCardBuilder()
+    .setHeader(CardService.newCardHeader().setTitle("Folder Copy"))
+    .build();
+  const shareCard = CardService.newCardBuilder()
+    .setHeader(CardService.newCardHeader().setTitle("Share"))
+    .build();
+  const permissionsCard = CardService.newCardBuilder()
+    .setHeader(CardService.newCardHeader().setTitle("Permissions"))
+    .build();
+
+
+  return [
+    headerCard,
+    folderCopyCard,
+    shareCard,
+    permissionsCard
+  ]
 }
 
 /**
