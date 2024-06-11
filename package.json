@@ -1,0 +1,11 @@
+{
+  "name": "effingo-client",
+  "version": "1.0.0",
+  "description": "\"The ui for the google workspace add-on app 'Effingo.'\"",
+  "main": "Common.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gabe Torion",
+  "license": "ISC"
+}
