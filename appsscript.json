@@ -7,6 +7,7 @@
     "https://www.googleapis.com/auth/calendar.addons.execute",
     "https://www.googleapis.com/auth/calendar.readonly",
     "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/drive",
     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
     "https://www.googleapis.com/auth/gmail.addons.execute",
@@ -15,10 +16,10 @@
   "addOns": {
     "common": {
       "name": "Effingo",
-      "logoUrl": "https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png",
+      "logoUrl": "https://effingo.s3.us-east-2.amazonaws.com/folderManagerSmallPic.png",
       "useLocaleFromApp": true,
       "homepageTrigger": {
-        "runFunction": "onHomepage",
+        "runFunction": "handleHomePgRender",
         "enabled": true
       },
       "universalActions": [{
