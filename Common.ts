@@ -19,9 +19,9 @@ const MAX_MESSAGE_LENGTH = 40;
  * Callback for rendering the homepage card.
  * @return {CardService.Card} The card to show to the user.
  */
-function onHomepage(e) {
-  console.log(e);
-  const hour = Number(Utilities.formatDate(new Date(), e.userTimezone.id, 'H'));
+function onHomepage(event: any) {
+  console.log(event);
+  const hour = Number(Utilities.formatDate(new Date(), event.userTimezone.id, 'H'));
   let message;
   if (hour >= 6 && hour < 12) {
     message = 'Good morning';
@@ -30,7 +30,8 @@ function onHomepage(e) {
   } else {
     message = 'Good night';
   }
-  message += ' ' + e.hostApp;
+  message += ' ' + event;
+
   return createCatCard(message, true);
 }
 
@@ -41,7 +42,7 @@ function onHomepage(e) {
  *      false otherwise. Defaults to false.
  * @return {CardService.Card} The assembled card.
  */
-function createCatCard(text, isHomepage) {
+function createCatCard(text: string, isHomepage: boolean) {
   // Explicitly set the value of isHomepage as false if null or undefined.
   if (!isHomepage) {
     isHomepage = false;
@@ -151,25 +152,8 @@ function createCatCard(text, isHomepage) {
  *     here}.
  * @return {CardService.ActionResponse} The action response to apply.
  */
-function onChangeCat(e) {
+function onChangeCat(e: any) {
   console.log(e);
-  // Get the text that was shown in the current cat image. This was passed as a
-  // parameter on the Action set for the folderButtonCopy.
-  const text = e.parameters.text;
-
-  // The isHomepage parameter is passed as a string, so convert to a Boolean.
-  const isHomepage = e.parameters.isHomepage === 'true';
-
-  // Create a new card with the same text.
-  const card = createCatCard(text, isHomepage);
-
-  // Create an action response that instructs the add-on to replace
-  // the current card with the new one.
-  const navigation = CardService.newNavigation()
-    .updateCard(card);
-  const actionResponse = CardService.newActionResponseBuilder()
-    .setNavigation(navigation);
-  return actionResponse.build();
 }
 
 /**
@@ -177,7 +161,7 @@ function onChangeCat(e) {
  * @param {string} message The message to truncate.
  * @return {string} The truncated message.
  */
-function truncate(message) {
+function truncate(message: string) {
   if (message.length > MAX_MESSAGE_LENGTH) {
     message = message.slice(0, MAX_MESSAGE_LENGTH);
     message = message.slice(0, message.lastIndexOf(' ')) + '...';
