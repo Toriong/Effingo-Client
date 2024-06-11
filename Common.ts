@@ -19,20 +19,9 @@ const MAX_MESSAGE_LENGTH = 40;
  * Callback for rendering the homepage card.
  * @return {CardService.Card} The card to show to the user.
  */
-function onHomepage(event: any) {
-  console.log(event);
-  const hour = Number(
-    Utilities.formatDate(new Date(), event.userTimezone.id, "H")
-  );
-  let message;
-  if (hour >= 6 && hour < 12) {
-    message = "Good morning";
-  } else if (hour >= 12 && hour < 18) {
-    message = "Good afternoon";
-  } else {
-    message = "Good night";
-  }
-  message += " " + event;
+function onHomepage() {
+  const message = ""
+  
 
   return createCatCard(message, true);
 }
@@ -46,9 +35,7 @@ function onHomepage(event: any) {
  */
 function createCatCard(text: string, isHomepage: boolean) {
   // Explicitly set the value of isHomepage as false if null or undefined.
-  if (!isHomepage) {
-    isHomepage = false;
-  }
+  
 
   // Use the "Cat as a service" API to get the cat image. Add a "time" URL
   // parameter to act as a cache buster.
@@ -158,7 +145,7 @@ function createHeader(
   imgUrl: string,
   imgAlt: string,
   imgStyle: TImageStyle = CardService.ImageStyle.SQUARE,
-  subTitle: string = ""
+  subTitle = ""
 ) {
   const header = CardService.newCardHeader()
     .setTitle(title)
@@ -177,8 +164,8 @@ function createHeader(
  *     here}.
  * @return {CardService.ActionResponse} The action response to apply.
  */
-function onChangeCat(e: any) {
-  console.log(e);
+function onChangeCat() {
+  
 }
 
 /**
@@ -187,9 +174,5 @@ function onChangeCat(e: any) {
  * @return {string} The truncated message.
  */
 function truncate(message: string) {
-  if (message.length > MAX_MESSAGE_LENGTH) {
-    message = message.slice(0, MAX_MESSAGE_LENGTH);
-    message = message.slice(0, message.lastIndexOf(" ")) + "...";
-  }
-  return message;
+  
 }
