@@ -1,14 +1,14 @@
 /**
-* This simple Google Workspace Add-on shows a random image of a cat in the
-* sidebar. When opened manually (the homepage card), some static text is
-* overlayed on the image, but when contextual cards are opened a new cat image
-* is shown with the text taken from that context (such as a message's subject
-* line) overlaying the image. There is also a folderButtonCopy that updates the card with
-* a new random cat image.
-*
-* Click "File > Make a copy..." to copy the script, and "Publish > Deploy from
-* manifest > Install add-on" to install it.
-*/
+ * This simple Google Workspace Add-on shows a random image of a cat in the
+ * sidebar. When opened manually (the homepage card), some static text is
+ * overlayed on the image, but when contextual cards are opened a new cat image
+ * is shown with the text taken from that context (such as a message's subject
+ * line) overlaying the image. There is also a folderButtonCopy that updates the card with
+ * a new random cat image.
+ *
+ * Click "File > Make a copy..." to copy the script, and "Publish > Deploy from
+ * manifest > Install add-on" to install it.
+ */
 
 /**
  * The maximum number of characters that can fit in the cat image.
@@ -21,16 +21,18 @@ const MAX_MESSAGE_LENGTH = 40;
  */
 function onHomepage(event: any) {
   console.log(event);
-  const hour = Number(Utilities.formatDate(new Date(), event.userTimezone.id, 'H'));
+  const hour = Number(
+    Utilities.formatDate(new Date(), event.userTimezone.id, "H")
+  );
   let message;
   if (hour >= 6 && hour < 12) {
-    message = 'Good morning';
+    message = "Good morning";
   } else if (hour >= 12 && hour < 18) {
-    message = 'Good afternoon';
+    message = "Good afternoon";
   } else {
-    message = 'Good night';
+    message = "Good night";
   }
-  message += ' ' + event;
+  message += " " + event;
 
   return createCatCard(message, true);
 }
@@ -52,28 +54,28 @@ function createCatCard(text: string, isHomepage: boolean) {
   // parameter to act as a cache buster.
   const now = new Date();
   // Replace forward slashes in the text, as they break the CataaS API.
-  const caption = text.replace(/\//g, ' ');
-  const imageUrl =
-    Utilities.formatString('https://cataas.com/cat/says/%s?time=%s',
-      encodeURIComponent(caption), now.getTime());
-  const image = CardService.newImage()
-    .setImageUrl(imageUrl)
-    .setAltText('Meow')
+  const caption = text.replace(/\//g, " ");
+  const imageUrl = Utilities.formatString(
+    "https://cataas.com/cat/says/%s?time=%s",
+    encodeURIComponent(caption),
+    now.getTime()
+  );
+  const image = CardService.newImage().setImageUrl(imageUrl).setAltText("Meow");
   // Create a folderButtonCopy that changes the cat image when pressed.
   // Note: Action parameter keys and values must be strings.
   const action = CardService.newAction()
-    .setFunctionName('onChangeCat')
+    .setFunctionName("onChangeCat")
     .setParameters({ text: text, isHomepage: isHomepage.toString() });
   const folderCopyBtn = CardService.newTextButton()
-    .setText('Folder Copy')
+    .setText("Folder Copy")
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
   const shareBtn = CardService.newTextButton()
-    .setText('Share')
+    .setText("Share")
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
   const permissionsBtn = CardService.newTextButton()
-    .setText('Permissions')
+    .setText("Permissions")
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
   const buttonSet = CardService.newButtonSet()
@@ -82,11 +84,11 @@ function createCatCard(text: string, isHomepage: boolean) {
     .addButton(permissionsBtn);
 
   // Create a footer to be shown at the bottom.
-  const footer = CardService.newFixedFooter()
-    .setPrimaryButton(CardService.newTextButton()
-      .setText('Powered by cataas.com')
-      .setOpenLink(CardService.newOpenLink()
-        .setUrl('https://cataas.com')));
+  const footer = CardService.newFixedFooter().setPrimaryButton(
+    CardService.newTextButton()
+      .setText("Powered by cataas.com")
+      .setOpenLink(CardService.newOpenLink().setUrl("https://cataas.com"))
+  );
 
   // Assemble the widgets and return the card.
   const section = CardService.newCardSection()
@@ -101,15 +103,16 @@ function createCatCard(text: string, isHomepage: boolean) {
     // but only when this card is a contextual card. Peek headers
     // are never used by non-contexual cards like homepages.
     const peekHeader = CardService.newCardHeader()
-      .setTitle('Contextual Cat')
-      .setImageUrl('https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png')
+      .setTitle("Contextual Cat")
+      .setImageUrl(
+        "https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png"
+      )
       .setSubtitle(text);
-    card.setPeekCardHeader(peekHeader)
+    card.setPeekCardHeader(peekHeader);
   }
 
   const btnsSection = CardService.newCardSection().addWidget(buttonSet);
   const homeCard = CardService.newCardBuilder().addSection(btnsSection);
-
 
   // Folder:
   // -Copy all items in a folder
@@ -126,8 +129,15 @@ function createCatCard(text: string, isHomepage: boolean) {
   const headerCard = CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle("Options"))
     .build();
+  const { SQUARE } = CARDSERVICE_VARS;
+  const folderCopyCardHeader = createHeader(
+    "Folder Copy",
+    IMGS.COPY_ICON,
+    "folder_copy_icon",
+    SQUARE
+  );
   const folderCopyCard = CardService.newCardBuilder()
-    .setHeader(CardService.newCardHeader().setTitle("Folder Copy"))
+    .setHeader(folderCopyCardHeader)
     .build();
   const shareCard = CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle("Share"))
@@ -136,13 +146,28 @@ function createCatCard(text: string, isHomepage: boolean) {
     .setHeader(CardService.newCardHeader().setTitle("Permissions"))
     .build();
 
+  return [headerCard, folderCopyCard, shareCard, permissionsCard];
+}
 
-  return [
-    headerCard,
-    folderCopyCard,
-    shareCard,
-    permissionsCard
-  ]
+type TImageStyle =
+  | typeof CardService.ImageStyle.CIRCLE
+  | typeof CardService.ImageStyle.SQUARE;
+
+function createHeader(
+  title: string,
+  imgUrl: string,
+  imgAlt: string,
+  imgStyle: TImageStyle = CardService.ImageStyle.SQUARE,
+  subTitle: string = ""
+) {
+  const header = CardService.newCardHeader()
+    .setTitle(title)
+    .setSubtitle(subTitle)
+    .setImageUrl(imgUrl)
+    .setImageAltText(imgAlt)
+    .setImageStyle(imgStyle);
+
+  return header;
 }
 
 /**
@@ -164,8 +189,7 @@ function onChangeCat(e: any) {
 function truncate(message: string) {
   if (message.length > MAX_MESSAGE_LENGTH) {
     message = message.slice(0, MAX_MESSAGE_LENGTH);
-    message = message.slice(0, message.lastIndexOf(' ')) + '...';
+    message = message.slice(0, message.lastIndexOf(" ")) + "...";
   }
   return message;
 }
-
