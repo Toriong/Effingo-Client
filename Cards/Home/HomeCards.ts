@@ -1,6 +1,14 @@
 const HomeCards = (() => {
 	const { createHeader } = CardServices;
 
+	type TParameters = { [key: string]: string };
+
+	function handleCardClick(fnName: TRenders, parameters: TParameters = {}) {
+		return CardService.newCardAction().setOnClickAction(
+			CardService.newAction().setFunctionName(fnName).setParameters(parameters),
+		);
+	}
+
 	/**
 	 *
 	 * @remarks
@@ -11,6 +19,9 @@ const HomeCards = (() => {
 	 * @beta
 	 */
 	function createHomePgCards() {
+		// GOAL: when the user clicks on the folder copy card, present the follwoing cards:
+		// -Deep Copy
+		// -Structure Copy
 		const { SQUARE } = CARDSERVICE_VARS;
 		const mainMenuHeader = CardService.newCardBuilder()
 			.setHeader(CardService.newCardHeader().setTitle("Tools"))
@@ -72,7 +83,12 @@ const HomeCards = (() => {
 			SQUARE,
 			"Copy all or some items of a folder or just its structure.",
 		);
+		const action = CardService.newAction().setFunctionName(
+			"handleCopyFolderPgRender",
+		);
+		const cardAction = CardService.newCardAction().setOnClickAction(action);
 		const folderCopyCard = CardService.newCardBuilder()
+			.addCardAction(cardAction)
 			.setHeader(folderCopyCardHeader)
 			.build();
 		const shareCardHeader = createHeader(

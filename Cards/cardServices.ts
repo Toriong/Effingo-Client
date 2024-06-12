@@ -2,6 +2,7 @@ const CardServices = (() => {
 	type TImageStyle =
 		| typeof CardService.ImageStyle.CIRCLE
 		| typeof CardService.ImageStyle.SQUARE;
+
 	function createHeader(
 		title: string,
 		imgUrl: string,
