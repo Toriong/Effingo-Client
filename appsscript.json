@@ -1,36 +1,38 @@
-   {
-  "timeZone": "America/New_York",
-  "dependencies": {
-  },
-  "exceptionLogging": "STACKDRIVER",
-  "oauthScopes": [
-    "https://www.googleapis.com/auth/calendar.addons.execute",
-    "https://www.googleapis.com/auth/calendar.readonly",
-    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
-    "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
-    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
-    "https://www.googleapis.com/auth/gmail.addons.execute",
-    "https://www.googleapis.com/auth/script.locale"],
-  "runtimeVersion": "V8",
-  "addOns": {
-    "common": {
-      "name": "Effingo",
-      "logoUrl": "https://effingo.s3.us-east-2.amazonaws.com/folderManagerSmallPic.png",
-      "useLocaleFromApp": true,
-      "homepageTrigger": {
-        "runFunction": "handleHomePgRender",
-        "enabled": true
-      },
-      "universalActions": [{
-        "label": "Learn more about Cataas",
-        "openLink": "https://cataas.com"
-      }]
-    },
-    "drive": {
-      "onItemsSelectedTrigger": {
-        "runFunction": "onDriveItemsSelected"
-      }
-    }
-  }
+{
+	"timeZone": "America/New_York",
+	"dependencies": {},
+	"exceptionLogging": "STACKDRIVER",
+	"oauthScopes": [
+		"https://www.googleapis.com/auth/calendar.addons.execute",
+		"https://www.googleapis.com/auth/calendar.readonly",
+		"https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+		"https://www.googleapis.com/auth/drive",
+		"https://www.googleapis.com/auth/gmail.addons.current.action.compose",
+		"https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+		"https://www.googleapis.com/auth/gmail.addons.execute",
+		"https://www.googleapis.com/auth/script.locale"
+	],
+	"runtimeVersion": "V8",
+	"addOns": {
+		"common": {
+			"name": "Effingo",
+			"logoUrl": "https://effingo.s3.us-east-2.amazonaws.com/folderManagerSmallPic.png",
+			"useLocaleFromApp": true,
+			"homepageTrigger": {
+				"runFunction": "handleHomePgRender",
+				"enabled": true
+			},
+			"universalActions": [
+				{
+					"label": "Learn more about Cataas",
+					"openLink": "https://cataas.com"
+				}
+			]
+		},
+		"drive": {
+			"onItemsSelectedTrigger": {
+				"runFunction": "onDriveItemsSelected"
+			}
+		}
+	}
 }
