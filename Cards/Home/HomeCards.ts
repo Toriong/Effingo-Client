@@ -1,3 +1,26 @@
+function displayFolderCards() {
+	const { createHeader } = CardServices;
+
+	const copyFolderStructureHeader = createHeader(
+		"Structure copy",
+		IMGS.ICON_FOLDER_STRUCTURE,
+		"copy_folder_structure_icon",
+		CardService.ImageStyle.SQUARE,
+		"Copy only the folder's sub folders.",
+	);
+	const copyFolderStructureOptCard = CardService.newCardBuilder()
+		.setHeader(copyFolderStructureHeader)
+		.build();
+	const navigation = CardService.newNavigation().updateCard(
+		copyFolderStructureOptCard,
+	);
+	const actionResponse = CardService.newActionResponseBuilder()
+		.setNavigation(navigation)
+		.build();
+
+	return actionResponse;
+}
+
 const HomeCards = (() => {
 	const { createHeader } = CardServices;
 
@@ -83,12 +106,12 @@ const HomeCards = (() => {
 			SQUARE,
 			"Copy all or some items of a folder or just its structure.",
 		);
-		const action = CardService.newAction().setFunctionName(
-			"handleCopyFolderPgRender",
-		);
+		const action =
+			CardService.newAction().setFunctionName("displayFolderCards");
 		const cardAction = CardService.newCardAction().setOnClickAction(action);
+		// GOAL: when the user clicks on a card, present the
+		// new cards for a folder copy logic
 		const folderCopyCard = CardService.newCardBuilder()
-			.addCardAction(cardAction)
 			.setHeader(folderCopyCardHeader)
 			.build();
 		const shareCardHeader = createHeader(
