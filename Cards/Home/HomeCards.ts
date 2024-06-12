@@ -6,12 +6,12 @@ function execute() {
 		IMGS.COPY_ICON,
 		"folder_copy_icon",
 		SQUARE,
-		"Copy all or some items of a folder or just its structure.",
+		"yo thereeee!.",
 	);
 	const card = CardService.newCardBuilder()
 		.setHeader(folderCopyCardHeader)
 		.build();
-	const x = CardService.newNavigation().updateCard(card);
+	const x = CardService.newNavigation().pushCard(card);
 
 	return x;
 }
@@ -130,17 +130,43 @@ const HomeCards = (() => {
 			"Copy all or some items of a folder or just its structure.",
 		);
 		const cardAction = CardService.newAction().setFunctionName("execute");
-		const imageButton = CardService.newImageButton()
-			.setAltText("right_arrow_icon.")
-			.setIconUrl(IMGS.ICON_RIGHT_ARROW)
+		const copyFolderContentOpt = CardService.newTextButton()
+			.setText("Copy items.")
+			.setBackgroundColor("#7AC4FB")
 			.setOnClickAction(cardAction);
-		const section = CardService.newCardSection().addWidget(imageButton);
-
+		const copyFolderStructureOpt = CardService.newTextButton()
+			.setText("Copy structures.")
+			.setBackgroundColor("#7AC4FB")
+			.setOnClickAction(cardAction);
+		const header = createHeader(
+			"Deep Copy",
+			IMGS.ICON_COPY_FOLDER_OPT,
+			"deep_copy_icon",
+			SQUARE,
+			"Copy all items.",
+		);
+		const txt = CardService.newTextParagraph().setText(
+			"Copy the content (the sub files/folders) of the selected folders.",
+		);
+		const copyFolderStructureTxt = CardService.newTextParagraph().setText(
+			"Copy only the sub folders of the parent folders (structure).",
+		);
+		const copyFolderItemsSection = CardService.newCardSection()
+			.setHeader(
+				"Copy the contents (the sub files/folders) of the selected folders.",
+			)
+			.addWidget(copyFolderContentOpt);
+		// RESPOND TO THE USER CLICKING ON A FOLDER
+		// GET ITS ID
+		// SEND A REQUEST TO COPY THAT FOLDER TO YOUR RUST SERVER
+		const copyFolderStructureSection = CardService.newCardSection()
+			.setHeader("Copy only the sub folders of the parent folders (structure).")
+			.addWidget(copyFolderStructureOpt);
 		const folderCopyCard = CardService.newCardBuilder()
 			.setHeader(folderCopyCardHeader)
-			.addSection(section)
+			.addSection(copyFolderItemsSection)
+			.addSection(copyFolderStructureSection)
 			.build();
-
 		const shareCardHeader = createHeader(
 			"Share",
 			IMGS.SHARE_ICON,
@@ -151,7 +177,6 @@ const HomeCards = (() => {
 		const shareCard = CardService.newCardBuilder()
 			.setHeader(shareCardHeader)
 			.build();
-
 		const permissionsCardHeader = createHeader(
 			"Permissions",
 			IMGS.PERMISSIONS_ICON,
@@ -162,7 +187,6 @@ const HomeCards = (() => {
 		const permissionsCard = CardService.newCardBuilder()
 			.setHeader(permissionsCardHeader)
 			.build();
-
 		const tools = [folderCopyCard, shareCard, permissionsCard];
 		const subscriptionVals = [titleCardForSubscriptionSec, subscriptionSecCard];
 		const feedbackAndReview = [
@@ -170,7 +194,6 @@ const HomeCards = (() => {
 			feedbackCard,
 			reviewCard,
 		];
-		const x = CardService.newNavigation().updateCard(folderCopyCard);
 
 		return [...tools, ...subscriptionVals, ...feedbackAndReview];
 	}
