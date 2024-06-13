@@ -5,6 +5,12 @@
 function handleHomePgRender() {
 	const { createHomePgCards } = HomeCards;
 
+	const triggers = ScriptApp.getProjectTriggers();
+
+	for (const trigger of triggers) {
+		ScriptApp.deleteTrigger(trigger);
+	}
+
 	return createHomePgCards();
 }
 

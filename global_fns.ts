@@ -56,3 +56,14 @@ function displayFolderCards() {
 
 	return actionResponse;
 }
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+function handleOnDriveItemsSelected(event: any) {
+	console.log("event: ", event.drive.selectedItems.length);
+	Logger.log("A google drive item has been clicked.");
+
+	Logger.log("DriveApp: ", DriveApp);
+	// GOAL: get the id of the clicked gdrive item
+	// get the id of the clicked item
+	// display that item to the user when the user goes to the "Copy Items UI"
+}

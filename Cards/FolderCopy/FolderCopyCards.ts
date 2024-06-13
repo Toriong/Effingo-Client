@@ -2,7 +2,6 @@ const FolderCopyCards = (() => {
 	const { createHeader } = CardServices;
 
 	function createFolderCopyCards() {
-		// create the Copy Folder card
 		const copyFolderHeader = createHeader(
 			"Deep Copy",
 			IMGS.ICON_COPY_FOLDER_OPT,

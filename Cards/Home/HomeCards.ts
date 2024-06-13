@@ -98,7 +98,7 @@ const HomeCards = (() => {
 		);
 		const cardAction = CardService.newAction().setFunctionName("execute");
 		const copyFolderContentOpt = CardService.newTextButton()
-			.setText("Copy items.")
+			.setText("Copy items")
 			.setBackgroundColor("#7AC4FB")
 			.setOnClickAction(cardAction);
 		const copyFolderItemsSection = CardService.newCardSection()
@@ -108,7 +108,7 @@ const HomeCards = (() => {
 			.addWidget(copyFolderContentOpt);
 		const copyFolderStructureSection = createHomeCardSection(
 			"Copy only the sub folders of the selected parent folders (structure).",
-			"Copy structures.",
+			"Copy structures",
 			"#7AC4FB",
 			"handleCopyFolderStructureBtn",
 		);

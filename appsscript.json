@@ -10,7 +10,8 @@
 		"https://www.googleapis.com/auth/gmail.addons.current.action.compose",
 		"https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 		"https://www.googleapis.com/auth/gmail.addons.execute",
-		"https://www.googleapis.com/auth/script.locale"
+		"https://www.googleapis.com/auth/script.locale",
+		"https://www.googleapis.com/auth/script.scriptapp"
 	],
 	"runtimeVersion": "V8",
 	"addOns": {
@@ -31,7 +32,7 @@
 		},
 		"drive": {
 			"onItemsSelectedTrigger": {
-				"runFunction": "onDriveItemsSelected"
+				"runFunction": "handleOnDriveItemsSelected"
 			}
 		}
 	}
