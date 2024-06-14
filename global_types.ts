@@ -2,6 +2,8 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.CIRCLE
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
+type TCardPgs = "home" | "copyFiles" | "copyFolders";
+type TCacheKeyName = "currentPgCard" 
 
 interface ITimeZone {
 	offset: number;

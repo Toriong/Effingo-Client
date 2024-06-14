@@ -55,9 +55,35 @@ function displayFolderCards() {
 	return actionResponse;
 }
 
-async function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
-	console.log("event: ", event);
-	const n = CardService.newNavigation().printJson();
+function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
+	// SET THE local storage to determine where the user is at in the application
+	const url = "https://776358c34440d0285e0bbe28061ed078.serveo.net";
+	const n = CardService.newNavigation().popCard();
+	const userCache = CacheService.getUserCache();
+	const x = userCache.get("isUserOnCopyPg");
 
-	// GOAL: whe
+
+
+	UrlFetchApp.fetch(url, {
+		method: "post",
+		payload: {
+			map: JSON.stringify(x),
+		},
+	});
+
+	// CASE: the user is not on copy folder page.
+
+	// PRESENT THE CURRENT PAGE TO THE USER.
+}
+
+function setCurrentUserCardPg(currentPg: TCardPgs) {
+	const userCache = CacheService.getUserCache();
+
+	userCache.put("currentPgCard", currentPg);
+}
+
+function getCacheVal(cacheKeyName: TCacheKeyName){
+	const userCache = CacheService.getUserCache();
+
+	return userCache.get(cacheKeyName);
 }
