@@ -10,6 +10,7 @@ const IMGS = (() => {
     const ICON_FOLDER_STRUCTURE = "https://effingo.s3.us-east-2.amazonaws.com/folder-copy.png";
     const ICON_COPY_FOLDER_OPT = "https://effingo.s3.us-east-2.amazonaws.com/copy-folder-option.png";
     const ICON_RIGHT_ARROW = "https://effingo.s3.us-east-2.amazonaws.com/right-arrow.png";
+    const ICON_BIN = "https://effingo.s3.us-east-2.amazonaws.com/bin.png";
     
     return { 
         COPY_ICON,
@@ -22,7 +23,15 @@ const IMGS = (() => {
         FEEDBACK_ICON,
         ICON_FOLDER_STRUCTURE,
         ICON_COPY_FOLDER_OPT,
-        ICON_RIGHT_ARROW
+        ICON_RIGHT_ARROW,
+        ICON_BIN    
+    }
+})();
+const COLORS = (() => {
+    const ACTION_BTN_COLOR = '#7AC4FB'
+
+    return {
+        ACTION_BTN_COLOR
     }
 })();
 const CARDSERVICE_VARS = (() => {

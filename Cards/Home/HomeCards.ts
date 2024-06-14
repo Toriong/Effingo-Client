@@ -30,6 +30,101 @@ const HomeCards = (() => {
 		return cardSection;
 	}
 
+	function createCopyFoldersSec() {
+		const cardAction = CardService.newAction().setFunctionName(
+			"renderSelectedGdriveItemsPg",
+		);
+		const copyFolderContentOpt = CardService.newTextButton()
+			.setText("Copy items")
+			.setBackgroundColor("#7AC4FB")
+			.setOnClickAction(cardAction);
+		const copyFolderItemsSection = CardService.newCardSection()
+			.setHeader(
+				"Copy the contents (the sub files/folders) of the selected folders.",
+			)
+			.addWidget(copyFolderContentOpt);
+		const copyFolderStructureSection = createHomeCardSection(
+			"Copy only the sub folders of the selected parent folders (structure).",
+			"Copy structures",
+			"#7AC4FB",
+			"handleCopyFolderStructureBtn",
+		);
+		copyFolderStructureSection.addWidget(copyFolderContentOpt);
+		// add the button widget for the folder structure copy section
+
+		return {
+			copyFolderItemsSection,
+			copyFolderStructureSection,
+		};
+	}
+
+	function createPermissionsSec() {
+		const revokePermissionsSec = createHomeCardSection(
+			"Revoke all or some permissions for a file or folder.",
+			"Revoke permissions.",
+			COLORS.ACTION_BTN_COLOR,
+			"handleCopyFolderStructureBtn",
+		);
+		const permissionsSearchSec = createHomeCardSection(
+			"Search for a specific permission.",
+			"Permissions search.",
+			COLORS.ACTION_BTN_COLOR,
+			"handleCopyFolderStructureBtn",
+		);
+
+		return { permissionsSearchSec, revokePermissionsSec };
+	}
+
+	function createToolCards() {
+		const { SQUARE } = CARDSERVICE_VARS;
+		const { copyFolderItemsSection, copyFolderStructureSection } =
+			createCopyFoldersSec();
+		const { permissionsSearchSec, revokePermissionsSec } =
+			createPermissionsSec();
+		const folderCopyCardHeader = createHeader(
+			"Folder Copy",
+			IMGS.COPY_ICON,
+			"folder_copy_icon",
+			SQUARE,
+			"Copy all or some items of a folder or just its structure.",
+		);
+		const folderCopyCard = CardService.newCardBuilder()
+			.setHeader(folderCopyCardHeader)
+			.addSection(copyFolderItemsSection)
+			.addSection(copyFolderStructureSection)
+			.build();
+		const titleHeaderForToolsSec = createHeader("Tools", "", "", SQUARE, "");
+		const titleCardForToolsSec = CardService.newCardBuilder()
+			.setHeader(titleHeaderForToolsSec)
+			.addSection(copyFolderItemsSection)
+			.addSection(copyFolderStructureSection)
+			.build();
+		const permissionsCardHeader = createHeader(
+			"Permissions",
+			IMGS.PERMISSIONS_ICON,
+			"permissions_icon",
+			SQUARE,
+			"Revoke access for multiple users. Search permissions by email.",
+		);
+		const permissionsCard = CardService.newCardBuilder()
+			.setHeader(permissionsCardHeader)
+			.addSection(revokePermissionsSec)
+			.addSection(permissionsSearchSec)
+			.build();
+		const shareCardHeader = createHeader(
+			"Ultra-Share",
+			IMGS.SHARE_ICON,
+			"share_icon",
+			SQUARE,
+			"Share multiple folders/files regardless if they are nested.",
+		);
+		const shareCard = CardService.newCardBuilder()
+			.setHeader(shareCardHeader)
+			.build();
+
+		return [titleCardForToolsSec, folderCopyCard, permissionsCard, shareCard];
+	}
+
 	function createHomePgCards() {
 		const { SQUARE } = CARDSERVICE_VARS;
 		const reviewAndFeedbackHeader = createHeader(
@@ -69,43 +164,8 @@ const HomeCards = (() => {
 			SQUARE,
 			"",
 		);
-		const cardAction =
-			CardService.newAction().setFunctionName("handleHomePgRender");
-		const copyFolderContentOpt = CardService.newTextButton()
-			.setText("Copy items")
-			.setBackgroundColor("#7AC4FB")
-			.setOnClickAction(cardAction);
-		const copyFolderItemsSection = CardService.newCardSection()
-			.setHeader(
-				"Copy the contents (the sub files/folders) of the selected folders.",
-			)
-			.addWidget(copyFolderContentOpt);
-		const copyFolderStructureSection = createHomeCardSection(
-			"Copy only the sub folders of the selected parent folders (structure).",
-			"Copy structures",
-			"#7AC4FB",
-			"handleCopyFolderStructureBtn",
-		);
 		const titleCardForSubscriptionSec = CardService.newCardBuilder()
 			.setHeader(titleHeaderForSubscriptionSec)
-			.build();
-		const titleHeaderForToolsSec = createHeader("Tools", "", "", SQUARE, "");
-		const folderCopyCardHeader = createHeader(
-			"Folder Copy",
-			IMGS.COPY_ICON,
-			"folder_copy_icon",
-			SQUARE,
-			"Copy all or some items of a folder or just its structure.",
-		);
-		const folderCopyCard = CardService.newCardBuilder()
-			.setHeader(folderCopyCardHeader)
-			.addSection(copyFolderItemsSection)
-			.addSection(copyFolderStructureSection)
-			.build();
-		const titleCardForToolsSec = CardService.newCardBuilder()
-			.setHeader(titleHeaderForToolsSec)
-			.addSection(copyFolderItemsSection)
-			.addSection(copyFolderStructureSection)
 			.build();
 		const subscriptionSecHeader = createHeader(
 			"Your Subscription",
@@ -117,40 +177,15 @@ const HomeCards = (() => {
 		const subscriptionSecCard = CardService.newCardBuilder()
 			.setHeader(subscriptionSecHeader)
 			.build();
-		const shareCardHeader = createHeader(
-			"Share",
-			IMGS.SHARE_ICON,
-			"share_icon",
-			SQUARE,
-			"Share multiple folders/files regardless if they are nested.",
-		);
-		const shareCard = CardService.newCardBuilder()
-			.setHeader(shareCardHeader)
-			.build();
-		const permissionsCardHeader = createHeader(
-			"Permissions",
-			IMGS.PERMISSIONS_ICON,
-			"permissions_icon",
-			SQUARE,
-			"Revoke access for multiple users. Search permissions by email.",
-		);
-		const permissionsCard = CardService.newCardBuilder()
-			.setHeader(permissionsCardHeader)
-			.build();
-		const tools = [
-			titleCardForToolsSec,
-			folderCopyCard,
-			permissionsCard,
-			shareCard,
-		];
 		const subscriptionVals = [titleCardForSubscriptionSec, subscriptionSecCard];
 		const feedbackAndReview = [
 			reviewAndFeedbackTitleCard,
 			feedbackCard,
 			reviewCard,
 		];
+		const toolsCards = createToolCards();
 
-		return [...tools, ...subscriptionVals, ...feedbackAndReview];
+		return [...toolsCards, ...subscriptionVals, ...feedbackAndReview];
 	}
 
 	return {

@@ -63,22 +63,25 @@ function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 	const userCache = CacheService.getUserCache();
 	const currentPgCard = getCacheVal<TCardPgs>("currentPgCard");
 
-	if (!currentPgCard || currentPgCard === "home") {
-		UrlFetchApp.fetch(url, {
-			method: "post",
-			payload: {
-				map: currentPgCard,
-			},
-		});
+	UrlFetchApp.fetch(url, {
+		method: "post",
+		payload: {
+			map: currentPgCard,
+		},
+	});
 
+	if (!currentPgCard || currentPgCard === "home") {
 		const nav = CardService.newNavigation().popToRoot();
 
 		return nav;
 	}
 
-	// CASE: the user is not on copy folder page.
+	// GOAL: take the user to the copy folders page from the copy folders options page.
 
-	// PRESENT THE CURRENT PAGE TO THE USER.
+	// GOAL: display the selected folders to the user, when the user is on the copy folder page
+
+	// if the user is on the share folders ui, then display the selected folders and files as
+	// -cards.
 }
 
 function setCurrentUserCardPg(currentPg: TCardPgs) {
