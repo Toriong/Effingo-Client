@@ -72,6 +72,10 @@ const HomeCards = (() => {
 		const titleCardForSubscriptionSec = CardService.newCardBuilder()
 			.setHeader(titleHeaderForSubscriptionSec)
 			.build();
+		const titleHeaderForToolsSec = createHeader("Tools", "", "", SQUARE, "");
+		const titleCardForToolsSec = CardService.newCardBuilder()
+			.setHeader(titleHeaderForToolsSec)
+			.build();
 		const subscriptionSecHeader = createHeader(
 			"Your Subscription",
 			IMGS.SUBSCRIPTION_ICON,
@@ -130,7 +134,12 @@ const HomeCards = (() => {
 		const permissionsCard = CardService.newCardBuilder()
 			.setHeader(permissionsCardHeader)
 			.build();
-		const tools = [folderCopyCard, shareCard, permissionsCard];
+		const tools = [
+			titleCardForToolsSec,
+			folderCopyCard,
+			shareCard,
+			permissionsCard,
+		];
 		const subscriptionVals = [titleCardForSubscriptionSec, subscriptionSecCard];
 		const feedbackAndReview = [
 			reviewAndFeedbackTitleCard,
