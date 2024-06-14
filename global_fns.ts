@@ -71,7 +71,9 @@ function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 			},
 		});
 
-		return createHomePgCards();
+		const nav = CardService.newNavigation().popToRoot();
+
+		return nav;
 	}
 
 	// CASE: the user is not on copy folder page.

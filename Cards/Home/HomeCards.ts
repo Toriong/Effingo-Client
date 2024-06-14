@@ -69,31 +69,8 @@ const HomeCards = (() => {
 			SQUARE,
 			"",
 		);
-		const titleCardForSubscriptionSec = CardService.newCardBuilder()
-			.setHeader(titleHeaderForSubscriptionSec)
-			.build();
-		const titleHeaderForToolsSec = createHeader("Tools", "", "", SQUARE, "");
-		const titleCardForToolsSec = CardService.newCardBuilder()
-			.setHeader(titleHeaderForToolsSec)
-			.build();
-		const subscriptionSecHeader = createHeader(
-			"Your Subscription",
-			IMGS.SUBSCRIPTION_ICON,
-			"SUBSCRIPTION_ICON",
-			SQUARE,
-			"View or update your subscription.",
-		);
-		const subscriptionSecCard = CardService.newCardBuilder()
-			.setHeader(subscriptionSecHeader)
-			.build();
-		const folderCopyCardHeader = createHeader(
-			"Folder Copy",
-			IMGS.COPY_ICON,
-			"folder_copy_icon",
-			SQUARE,
-			"Copy all or some items of a folder or just its structure.",
-		);
-		const cardAction = CardService.newAction().setFunctionName("execute");
+		const cardAction =
+			CardService.newAction().setFunctionName("handleHomePgRender");
 		const copyFolderContentOpt = CardService.newTextButton()
 			.setText("Copy items")
 			.setBackgroundColor("#7AC4FB")
@@ -109,10 +86,36 @@ const HomeCards = (() => {
 			"#7AC4FB",
 			"handleCopyFolderStructureBtn",
 		);
+		const titleCardForSubscriptionSec = CardService.newCardBuilder()
+			.setHeader(titleHeaderForSubscriptionSec)
+			.build();
+		const titleHeaderForToolsSec = createHeader("Tools", "", "", SQUARE, "");
+		const folderCopyCardHeader = createHeader(
+			"Folder Copy",
+			IMGS.COPY_ICON,
+			"folder_copy_icon",
+			SQUARE,
+			"Copy all or some items of a folder or just its structure.",
+		);
 		const folderCopyCard = CardService.newCardBuilder()
 			.setHeader(folderCopyCardHeader)
 			.addSection(copyFolderItemsSection)
 			.addSection(copyFolderStructureSection)
+			.build();
+		const titleCardForToolsSec = CardService.newCardBuilder()
+			.setHeader(titleHeaderForToolsSec)
+			.addSection(copyFolderItemsSection)
+			.addSection(copyFolderStructureSection)
+			.build();
+		const subscriptionSecHeader = createHeader(
+			"Your Subscription",
+			IMGS.SUBSCRIPTION_ICON,
+			"SUBSCRIPTION_ICON",
+			SQUARE,
+			"View or update your subscription.",
+		);
+		const subscriptionSecCard = CardService.newCardBuilder()
+			.setHeader(subscriptionSecHeader)
 			.build();
 		const shareCardHeader = createHeader(
 			"Share",
@@ -137,8 +140,8 @@ const HomeCards = (() => {
 		const tools = [
 			titleCardForToolsSec,
 			folderCopyCard,
-			shareCard,
 			permissionsCard,
+			shareCard,
 		];
 		const subscriptionVals = [titleCardForSubscriptionSec, subscriptionSecCard];
 		const feedbackAndReview = [
