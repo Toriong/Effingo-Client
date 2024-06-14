@@ -62,7 +62,6 @@ const HomeCards = (() => {
 		const feedbackCard = CardService.newCardBuilder()
 			.setHeader(feedbackHeader)
 			.build();
-
 		const titleHeaderForSubscriptionSec = createHeader(
 			"Subscription",
 			"",
@@ -73,7 +72,6 @@ const HomeCards = (() => {
 		const titleCardForSubscriptionSec = CardService.newCardBuilder()
 			.setHeader(titleHeaderForSubscriptionSec)
 			.build();
-
 		const subscriptionSecHeader = createHeader(
 			"Your Subscription",
 			IMGS.SUBSCRIPTION_ICON,
@@ -84,7 +82,6 @@ const HomeCards = (() => {
 		const subscriptionSecCard = CardService.newCardBuilder()
 			.setHeader(subscriptionSecHeader)
 			.build();
-
 		const folderCopyCardHeader = createHeader(
 			"Folder Copy",
 			IMGS.COPY_ICON,
