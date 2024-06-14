@@ -56,6 +56,7 @@ function displayFolderCards() {
 }
 
 function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
+	const { createHomePgCards } = HomeCards;
 	// SET THE local storage to determine where the user is at in the application
 	const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
 	const n = CardService.newNavigation().popCard();
@@ -69,8 +70,8 @@ function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 				map: currentPgCard,
 			},
 		});
-		
-		return handleFolderItemsCopy();
+
+		return createHomePgCards();
 	}
 
 	// CASE: the user is not on copy folder page.

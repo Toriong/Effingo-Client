@@ -32,9 +32,6 @@ const HomeCards = (() => {
 
 	function createHomePgCards() {
 		const { SQUARE } = CARDSERVICE_VARS;
-
-		const mainMenuHeader = CardService.newCardHeader().setTitle("Tools");
-
 		const reviewAndFeedbackHeader = createHeader(
 			"Feedback & Review",
 			"",
@@ -45,7 +42,6 @@ const HomeCards = (() => {
 		const reviewAndFeedbackTitleCard = CardService.newCardBuilder()
 			.setHeader(reviewAndFeedbackHeader)
 			.build();
-
 		const feedbackHeader = createHeader(
 			"Feedback",
 			IMGS.FEEDBACK_ICON,
