@@ -3,7 +3,8 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "copyFiles" | "copyFolders";
-type TCacheKeyName = "currentPgCard" 
+type TUserPropertyKeys = "currentPgCard"
+type TSelectedUserPropertyKey<T extends TUserPropertyKeys> = T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 
 interface ITimeZone {
 	offset: number;

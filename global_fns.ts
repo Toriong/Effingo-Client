@@ -57,19 +57,21 @@ function displayFolderCards() {
 
 function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 	// SET THE local storage to determine where the user is at in the application
-	const url = "https://776358c34440d0285e0bbe28061ed078.serveo.net";
+	const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
 	const n = CardService.newNavigation().popCard();
 	const userCache = CacheService.getUserCache();
-	const x = userCache.get("isUserOnCopyPg");
+	const currentPgCard = getCacheVal<TCardPgs>("currentPgCard");
 
-
-
-	UrlFetchApp.fetch(url, {
-		method: "post",
-		payload: {
-			map: JSON.stringify(x),
-		},
-	});
+	if (!currentPgCard || currentPgCard === "home") {
+		UrlFetchApp.fetch(url, {
+			method: "post",
+			payload: {
+				map: currentPgCard,
+			},
+		});
+		
+		return handleFolderItemsCopy();
+	}
 
 	// CASE: the user is not on copy folder page.
 
@@ -77,13 +79,21 @@ function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 }
 
 function setCurrentUserCardPg(currentPg: TCardPgs) {
-	const userCache = CacheService.getUserCache();
+	const userProperties = PropertiesService.getUserProperties();
+	const currentUserCardPg: {
+		[key in TSelectedUserPropertyKey<"currentPgCard">]: string;
+	} = { currentPgCard: currentPg };
 
-	userCache.put("currentPgCard", currentPg);
+	userProperties.setProperties(currentUserCardPg);
 }
 
-function getCacheVal(cacheKeyName: TCacheKeyName){
-	const userCache = CacheService.getUserCache();
+function getCacheVal<TData>(cacheKeyName: TUserPropertyKeys): TData | null {
+	const userProperties = PropertiesService.getUserProperties();
 
-	return userCache.get(cacheKeyName);
+	const cacheVal = userProperties.getProperty(cacheKeyName);
+
+	if (!cacheVal) {
+		return null;
+	}
+	return cacheVal as TData;
 }
