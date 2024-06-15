@@ -55,12 +55,20 @@ function displayFolderCards() {
 	return actionResponse;
 }
 
-function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
+function getIsParsable<TData extends string>(val: TData) {
+	try {
+		JSON.parse(val);
+
+		return true;
+	} catch (error) {
+		console.error("Not parsable. Reason: ", error);
+	}
+}
+
+function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	const { createHomePgCards } = HomeCards;
 	// SET THE local storage to determine where the user is at in the application
 	const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
-	const n = CardService.newNavigation().popCard();
-	const userCache = CacheService.getUserCache();
 	const currentPgCard = getCacheVal<TCardPgs>("currentPgCard");
 
 	UrlFetchApp.fetch(url, {
@@ -75,6 +83,11 @@ function handleOnDriveItemsSelected(event: IGdriveItemSelectedEvent) {
 
 		return nav;
 	}
+
+	// notes:
+	// -set the current page to the folderCopy
+	// -get the user's location
+	// -if the user is on the copy folder structure
 
 	// GOAL: take the user to the copy folders page from the copy folders options page.
 

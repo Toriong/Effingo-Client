@@ -10,14 +10,21 @@ function handleHomePgRender() {
 	return createHomePgCards();
 }
 
-function renderSelectedGdriveItemsPg(
-	headerTxt = "",
-	gdriveItemNames?: string[],
-) {
+function renderCopyFolderCardPg(event: IGScriptAppEvent) {
+	if (!event.parameters?.headerTxt) {
+		return;
+	}
+
+	const { headerTxt, gdriveItemNamesParsable } = event.parameters;
 	const selectedGdriveItemSection = CardService.newCardSection();
 	const deleteBtn = CardService.newImageButton().setIconUrl(IMGS.ICON_BIN);
 	const divider = CardService.newDivider();
 	const headerTxtParagraph = CardService.newTextParagraph().setText(headerTxt);
+	const gdriveItemNames: string[] | null = getIsParsable(
+		gdriveItemNamesParsable,
+	)
+		? JSON.parse(gdriveItemNamesParsable)
+		: null;
 
 	selectedGdriveItemSection.addWidget(headerTxtParagraph);
 

@@ -3,8 +3,9 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "copyFiles" | "copyFolders";
-type TUserPropertyKeys = "currentPgCard"
-type TSelectedUserPropertyKey<T extends TUserPropertyKeys> = T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
+type TUserPropertyKeys = "currentPgCard";
+type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
+	T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 
 interface ITimeZone {
 	offset: number;
@@ -28,10 +29,12 @@ interface IDrive {
 	selectedItems: ISelectedItems[];
 	activeCursorItem: ISelectedItems;
 }
-interface IGdriveItemSelectedEvent extends IUserLocaleAndHostApp {
+type TParameterKeys = "headerTxt" | "gdriveItemNamesParsable";
+interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	clientPlatform: string;
 	commonEventObject: ICommonEventObject;
 	userTimezone: ITimeZone;
 	userCountry: string;
 	drive: IDrive;
+	parameters?: { [key in TParameterKeys]: string };
 }
