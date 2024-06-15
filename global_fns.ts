@@ -83,10 +83,16 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	}
 
 	// the user is on the item selected results page
+	// get the header txt from userPropties field
+	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
+
+	if (!event.parameters) {
+		event.parameters = {};
+	}
 
 	Object.defineProperties(event.parameters, {
 		hasIsOnItemSelectedResultPgBeenSet: { value: true, writable: true },
-		headerTxt: { value: true, writable: true },
+		headerTxt: { value: headerTxt, writable: true },
 	});
 
 	return renderCopyFolderCardPg(event);

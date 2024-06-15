@@ -49,5 +49,5 @@ interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	userTimezone: ITimeZone;
 	userCountry: string;
 	drive: IDrive;
-	parameters?: { [key in TParameterKeys]: string };
+	parameters?: Partial<{ [key in TParameterKeys]: string }>;
 }

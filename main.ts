@@ -10,34 +10,47 @@ function handleHomePgRender() {
 	return createHomePgCards();
 }
 
+function deleteGdriveItemSelection() {
+	// store all selected items into the user property
+}
+
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	if (!event.parameters) {
 		return;
 	}
 
-	const {
-		headerTxt,
-		gdriveItemNamesParsable,
-		hasIsOnItemSelectedResultPgBeenSet,
-	} = event.parameters;
+	const { headerTxt, hasIsOnItemSelectedResultPgBeenSet } = event.parameters;
+
+	if (!headerTxt) {
+		return;
+	}
 
 	if (!hasIsOnItemSelectedResultPgBeenSet) {
 		setUserProperty("isOnItemSelectedResultPg", true);
 	}
 
 	const selectedGdriveItemSection = CardService.newCardSection();
-	const deleteBtn = CardService.newImageButton().setIconUrl(IMGS.ICON_BIN);
+	const cardAction = CardService.newAction();
+
+	cardAction.setFunctionName("deletGdriveItemSelectionn");
+
+	const deleteBtn = CardService.newImageButton()
+		.setIconUrl(IMGS.ICON_BIN)
+		.setOnClickAction(cardAction);
 	const divider = CardService.newDivider();
+
+	if (!getUserProperty("headerTxtForGdriveSelectedResultsPg")) {
+		setUserProperty("headerTxtForGdriveSelectedResultsPg", headerTxt);
+	}
+
 	const headerTxtParagraph = CardService.newTextParagraph().setText(headerTxt);
-	const gdriveItemNames: string[] | null = getIsParsable(
-		gdriveItemNamesParsable,
-	)
-		? JSON.parse(gdriveItemNamesParsable)
-		: null;
+	const selectedItems = event.drive.selectedItems;
 
 	selectedGdriveItemSection.addWidget(headerTxtParagraph);
 
-	if (!gdriveItemNames?.length) {
+	if (!selectedItems?.length) {
+		event.drive.selectedItems = [];
+		event.drive.activeCursorItem = null;
 		const card = CardService.newCardBuilder()
 			.addSection(selectedGdriveItemSection)
 			.build();
@@ -48,9 +61,13 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		return actionResponse.build();
 	}
 
-	for (const gdriveItemName of gdriveItemNames) {
+	for (const { title, mimeType } of selectedItems) {
+		if (!mimeType.includes("folder")) {
+			continue;
+		}
+
 		const selectedGdriveItemName =
-			CardService.newTextParagraph().setText(gdriveItemName);
+			CardService.newTextParagraph().setText(title);
 
 		selectedGdriveItemSection.addWidget(selectedGdriveItemName);
 		selectedGdriveItemSection.addWidget(deleteBtn);
