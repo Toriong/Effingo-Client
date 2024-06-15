@@ -36,9 +36,15 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	selectedGdriveItemSection.addWidget(headerTxtParagraph);
 
 	if (!gdriveItemNames?.length) {
-		return CardService.newCardBuilder()
+		const card = CardService.newCardBuilder()
 			.addSection(selectedGdriveItemSection)
 			.build();
+		const nav = CardService.newNavigation().popToRoot().updateCard(card);
+		const actionresponse =
+			CardService.newActionResponseBuilder().setNavigation(nav);
+		// const nav = CardService.newNavigation().updateCard(card);
+
+		return actionresponse.build();
 	}
 
 	for (const gdriveItemName of gdriveItemNames) {
