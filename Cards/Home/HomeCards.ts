@@ -31,9 +31,9 @@ const HomeCards = (() => {
 	}
 
 	function createCopyFoldersSec() {
-		const cardAction = CardService.newAction().setFunctionName(
-			"renderSelectedGdriveItemsPg",
-		);
+		const cardAction = CardService.newAction()
+			.setFunctionName("renderSelectedGdriveItemsPg")
+			.setParameters({ headerTxt: "Copy all items of selected folder." });
 		const copyFolderContentOpt = CardService.newTextButton()
 			.setText("Copy items")
 			.setBackgroundColor("#7AC4FB")
@@ -48,9 +48,11 @@ const HomeCards = (() => {
 			"Copy structures",
 			"#7AC4FB",
 			"handleCopyFolderStructureBtn",
+			{
+				headerTxt:
+					"Copy the structure (just the folders) of the selected folders.",
+			},
 		);
-		copyFolderStructureSection.addWidget(copyFolderContentOpt);
-		// add the button widget for the folder structure copy section
 
 		return {
 			copyFolderItemsSection,

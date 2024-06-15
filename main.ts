@@ -10,15 +10,16 @@ function handleHomePgRender() {
 	return createHomePgCards();
 }
 
-function renderSelectedGdriveItemsPg(gdriveItemNames?: string[]) {
+function renderSelectedGdriveItemsPg(
+	headerTxt = "",
+	gdriveItemNames?: string[],
+) {
 	const selectedGdriveItemSection = CardService.newCardSection();
 	const deleteBtn = CardService.newImageButton().setIconUrl(IMGS.ICON_BIN);
 	const divider = CardService.newDivider();
-	const headerTxt = CardService.newTextParagraph().setText(
-		"All of your selected folders to copy will appear below: ",
-	);
+	const headerTxtParagraph = CardService.newTextParagraph().setText(headerTxt);
 
-	selectedGdriveItemSection.addWidget(headerTxt);
+	selectedGdriveItemSection.addWidget(headerTxtParagraph);
 
 	if (!gdriveItemNames?.length) {
 		return CardService.newCardBuilder()
