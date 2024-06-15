@@ -5,19 +5,26 @@
 function handleHomePgRender() {
 	const { createHomePgCards } = HomeCards;
 
-	setIsUserOnItemSelectedResultsPg(false);
+	setUserProperty("isOnItemSelectedResultPg", false);
 
 	return createHomePgCards();
 }
 
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
-	if (!event.parameters?.headerTxt) {
+	if (!event.parameters) {
 		return;
 	}
 
-	setIsUserOnItemSelectedResultsPg(true);
+	const {
+		headerTxt,
+		gdriveItemNamesParsable,
+		hasIsOnItemSelectedResultPgBeenSet,
+	} = event.parameters;
 
-	const { headerTxt, gdriveItemNamesParsable } = event.parameters;
+	if (!hasIsOnItemSelectedResultPgBeenSet) {
+		setUserProperty("isOnItemSelectedResultPg", true);
+	}
+
 	const selectedGdriveItemSection = CardService.newCardSection();
 	const deleteBtn = CardService.newImageButton().setIconUrl(IMGS.ICON_BIN);
 	const divider = CardService.newDivider();
@@ -53,7 +60,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const card = CardService.newCardBuilder()
 		.addSection(selectedGdriveItemSection)
 		.build();
-	const nav = CardService.newNavigation().popToRoot().updateCard(card);
+	const nav = CardService.newNavigation().updateCard(card);
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
 

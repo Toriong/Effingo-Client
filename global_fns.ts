@@ -63,8 +63,9 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	const { createHomePgCards } = HomeCards;
-	const isOnItemSelectedResultPgStr = getCacheVal("isOnItemSelectedResultPg");
+	const isOnItemSelectedResultPgStr = getUserProperty(
+		"isOnItemSelectedResultPg",
+	);
 
 	// CASE: the user goes to the copy folder result page and selects an item
 	// GOAL: re-render the whole page with the newly selected item append to the current list
@@ -80,6 +81,15 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 
 		return nav;
 	}
+
+	// the user is on the item selected results page
+
+	Object.defineProperties(event.parameters, {
+		hasIsOnItemSelectedResultPgBeenSet: { value: true, writable: true },
+		headerTxt: { value: true, writable: true },
+	});
+
+	return renderCopyFolderCardPg(event);
 }
 
 function setIsUserOnItemSelectedResultsPg(isOnItemSelectedResultPg: boolean) {
@@ -122,15 +132,17 @@ function setIsUserOnItemSelectedResultsPgOnClick(event: IGScriptAppEvent) {
 	userProperties.setProperties(currentUserCardPg);
 }
 
-function setCache(keyName: TUserPropertyKeys) {
+function setUserProperty<
+	TDataA extends TUserPropertyKeys,
+	TDataB extends TDynamicCacheVal<TDataA>,
+>(keyName: TDataA, val: TDataB) {
 	const userProperties = PropertiesService.getUserProperties();
 
-	// UserProperties.
+	userProperties.setProperty(keyName, JSON.stringify(val));
 }
 
-function getCacheVal(cacheKeyName: TUserPropertyKeys) {
+function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	const userProperties = PropertiesService.getUserProperties();
-
 	const cacheVal = userProperties.getProperty(cacheKeyName);
 
 	if (!cacheVal) {

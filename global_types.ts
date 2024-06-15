@@ -3,9 +3,16 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "folderCopyOptions" | "selectedFoldersToCopy";
-type TUserPropertyKeys =
-	| "isOnItemSelectedResultPg"
-	| "itemSelectedResultPgHeaderTxt";
+type TUserProperties = {
+	isOnItemSelectedResultPg: boolean;
+	hasIsOnItemSelectedResultPgBeenSet: boolean;
+	itemSelectedResultPgHeaderTxt: string;
+	headerTxtForGdriveSelectedResultsPg: string;
+};
+type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
+	? TUserProperties[TData]
+	: never;
+type TUserPropertyKeys = keyof TUserProperties;
 type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
 	T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 
@@ -29,11 +36,12 @@ interface ISelectedItems {
 }
 interface IDrive {
 	selectedItems: ISelectedItems[];
-	activeCursorItem: ISelectedItems;
+	activeCursorItem: ISelectedItems | null;
 }
 type TParameterKeys =
 	| "headerTxt"
 	| "gdriveItemNamesParsable"
+	| "hasIsOnItemSelectedResultPgBeenSet"
 	| TUserPropertyKeys;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	clientPlatform: string;
