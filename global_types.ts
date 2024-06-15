@@ -3,12 +3,20 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "folderCopyOptions" | "selectedFoldersToCopy";
-type TUserProperties = {
+type TSelectedGdriveItemsKeyNames = "selectedFolders" | "selectedGdriveItems";
+type TSelectedItemsProperty = Record<
+	TSelectedGdriveItemsKeyNames,
+	ISelectedItem[]
+>;
+
+interface TUserProperties extends TSelectedItemsProperty {
 	isOnItemSelectedResultPg: boolean;
 	hasIsOnItemSelectedResultPgBeenSet: boolean;
 	itemSelectedResultPgHeaderTxt: string;
 	headerTxtForGdriveSelectedResultsPg: string;
-};
+	selectedFoldersParsable: string;
+}
+
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
 	? TUserProperties[TData]
 	: never;
@@ -28,15 +36,15 @@ interface ICommonEventObject extends IUserLocaleAndHostApp {
 	platform: string;
 	timeZone: ITimeZone;
 }
-interface ISelectedItems {
+interface ISelectedItem {
 	title: string;
 	id: string;
 	mimeType: string;
 	iconUrl: string;
 }
 interface IDrive {
-	selectedItems: ISelectedItems[];
-	activeCursorItem: ISelectedItems | null;
+	selectedItems: ISelectedItem[];
+	activeCursorItem: ISelectedItem | null;
 }
 type TParameterKeys =
 	| "headerTxt"

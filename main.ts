@@ -14,12 +14,21 @@ function deleteGdriveItemSelection() {
 	// store all selected items into the user property
 }
 
+// GOAL: create two functions:
+// function 1: will handle the first render of the page
+
+// function 2: will update the results page of clicked gdrive items
+
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	if (!event.parameters) {
 		return;
 	}
 
-	const { headerTxt, hasIsOnItemSelectedResultPgBeenSet } = event.parameters;
+	const {
+		headerTxt,
+		hasIsOnItemSelectedResultPgBeenSet,
+		selectedFoldersParsable,
+	} = event.parameters;
 
 	if (!headerTxt) {
 		return;
@@ -43,14 +52,17 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		setUserProperty("headerTxtForGdriveSelectedResultsPg", headerTxt);
 	}
 
-	const headerTxtParagraph = CardService.newTextParagraph().setText(headerTxt);
-	const selectedItems = event.drive.selectedItems;
+	const headerTxtParagraph = CardService.newTextParagraph().setText(
+		`<b>${headerTxt}</b>`,
+	);
+	const selectedItems: ISelectedItem[] =
+		selectedFoldersParsable && getIsParsable(selectedFoldersParsable)
+			? JSON.parse(selectedFoldersParsable)
+			: [];
 
-	selectedGdriveItemSection.addWidget(headerTxtParagraph);
+	selectedGdriveItemSection.addWidget(headerTxtParagraph).addWidget(divider);
 
 	if (!selectedItems?.length) {
-		event.drive.selectedItems = [];
-		event.drive.activeCursorItem = null;
 		const card = CardService.newCardBuilder()
 			.addSection(selectedGdriveItemSection)
 			.build();
@@ -66,10 +78,9 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 			continue;
 		}
 
-		const selectedGdriveItemName =
-			CardService.newTextParagraph().setText(title);
+		const titleWidget = CardService.newTextParagraph().setText(title);
 
-		selectedGdriveItemSection.addWidget(selectedGdriveItemName);
+		selectedGdriveItemSection.addWidget(titleWidget);
 		selectedGdriveItemSection.addWidget(deleteBtn);
 		selectedGdriveItemSection.addWidget(divider);
 	}
@@ -77,11 +88,8 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const card = CardService.newCardBuilder()
 		.addSection(selectedGdriveItemSection)
 		.build();
-	const nav = CardService.newNavigation().updateCard(card);
-	const actionResponse =
-		CardService.newActionResponseBuilder().setNavigation(nav);
 
-	return actionResponse.build();
+	return card;
 }
 
 function handleCopyFolderPgRender() {

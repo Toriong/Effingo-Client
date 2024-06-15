@@ -84,16 +84,23 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 
 	// the user is on the item selected results page
 	// get the header txt from userPropties field
+	const selectedFoldersStr = getUserProperty("selectedFolders");
+
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
 	if (!event.parameters) {
 		event.parameters = {};
 	}
 
-	Object.defineProperties(event.parameters, {
-		hasIsOnItemSelectedResultPgBeenSet: { value: true, writable: true },
-		headerTxt: { value: headerTxt, writable: true },
+	Object.assign(event.parameters, {
+		hasIsOnItemSelectedResultPgBeenSet: true,
+		headerTxt: JSON.parse(headerTxt as string),
+		selectedFoldersParsable: selectedFoldersStr,
 	});
+
+	// UrlFetchApp.fetch("https://sixty-bushes-shine.loca.lt/", {
+	// 	payload: { map: JSON.stringify(event) },
+	// });
 
 	return renderCopyFolderCardPg(event);
 }
