@@ -5,14 +5,7 @@
 function handleHomePgRender() {
 	const { createHomePgCards } = HomeCards;
 
-	// UrlFetchApp.fetch("https://c018f0e68a78c327e38baaf541e682c9.serveo.net", {
-	// 	method: "post",
-	// 	payload: {
-	// 		map: JSON.stringify("hey"),
-	// 	},
-	// });
-
-	setCurrentUserCardPg("home");
+	setIsUserOnItemSelectedResultsPg(false);
 
 	return createHomePgCards();
 }
@@ -21,6 +14,8 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	if (!event.parameters?.headerTxt) {
 		return;
 	}
+
+	setIsUserOnItemSelectedResultsPg(true);
 
 	const { headerTxt, gdriveItemNamesParsable } = event.parameters;
 	const selectedGdriveItemSection = CardService.newCardSection();
@@ -40,11 +35,10 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 			.addSection(selectedGdriveItemSection)
 			.build();
 		const nav = CardService.newNavigation().popToRoot().updateCard(card);
-		const actionresponse =
+		const actionResponse =
 			CardService.newActionResponseBuilder().setNavigation(nav);
-		// const nav = CardService.newNavigation().updateCard(card);
 
-		return actionresponse.build();
+		return actionResponse.build();
 	}
 
 	for (const gdriveItemName of gdriveItemNames) {
@@ -59,9 +53,11 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const card = CardService.newCardBuilder()
 		.addSection(selectedGdriveItemSection)
 		.build();
-	const nav = CardService.newNavigation().updateCard(card);
+	const nav = CardService.newNavigation().popToRoot().updateCard(card);
+	const actionResponse =
+		CardService.newActionResponseBuilder().setNavigation(nav);
 
-	return nav;
+	return actionResponse.build();
 }
 
 function handleCopyFolderPgRender() {

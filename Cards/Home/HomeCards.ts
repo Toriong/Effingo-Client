@@ -36,9 +36,6 @@ const HomeCards = (() => {
 		cardAction.setFunctionName("renderCopyFolderCardPg").setParameters({
 			headerTxt: "The selected folders to copy will appear below: ",
 		});
-		// cardAction.setFunctionName("setCurrentUserCardPgOnClick").setParameters({
-		// 	currentCardPg: "selectedFoldersToCopy",
-		// });
 
 		const copyFolderContentOptBtn = CardService.newTextButton()
 			.setText("Copy items")
@@ -59,13 +56,6 @@ const HomeCards = (() => {
 					"The selected folders to copy their structure will appear below: ",
 			},
 		);
-		// const copyFolderStructureCardAction = CardService.newAction()
-		// 	.setFunctionName("setCurrentUserCardPgOnClick")
-		// 	.setParameters({
-		// 		currentCardPg: "selectedFoldersToCopy",
-		// 	});
-
-		// copyFolderStructureSection.addWidget(copyFolderStructureCardAction);
 
 		return {
 			copyFolderItemsSection,

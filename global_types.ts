@@ -3,7 +3,9 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "folderCopyOptions" | "selectedFoldersToCopy";
-type TUserPropertyKeys = "currentCardPg";
+type TUserPropertyKeys =
+	| "isOnItemSelectedResultPg"
+	| "itemSelectedResultPgHeaderTxt";
 type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
 	T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 

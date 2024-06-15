@@ -64,55 +64,71 @@ function getIsParsable<TData extends string>(val: TData) {
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	const { createHomePgCards } = HomeCards;
-	// SET THE local storage to determine where the user is at in the application
-	// const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
-	const currentCardPg = getCacheVal<TCardPgs>("currentCardPg");
+	const isOnItemSelectedResultPgStr = getCacheVal("isOnItemSelectedResultPg");
 
-	// UrlFetchApp.fetch(url, {
-	// 	method: "post",
-	// 	payload: {
-	// 		map: currentCardPg,
-	// 	},
-	// });
+	// CASE: the user goes to the copy folder result page and selects an item
+	// GOAL: re-render the whole page with the newly selected item append to the current list
 
-	if (!currentCardPg || currentCardPg === "home") {
+	// Display all of the gdrive items to the user.
+
+	if (
+		!isOnItemSelectedResultPgStr ||
+		(getIsBool(isOnItemSelectedResultPgStr) &&
+			!JSON.parse(isOnItemSelectedResultPgStr))
+	) {
 		const nav = CardService.newNavigation().popToRoot();
 
 		return nav;
 	}
-
-	// notes:
-	// -present the folders that were selected by the user
-	// -the user clicks on a folder
-	// -call 'renderCopyFolderCardPg'
 }
 
-function setCurrentUserCardPg(currentPg: TCardPgs) {
+function setIsUserOnItemSelectedResultsPg(isOnItemSelectedResultPg: boolean) {
 	const userProperties = PropertiesService.getUserProperties();
 	const currentUserCardPg: {
-		[key in TSelectedUserPropertyKey<"currentCardPg">]: string;
-	} = { currentCardPg: currentPg };
+		[key in TSelectedUserPropertyKey<"isOnItemSelectedResultPg">]: string;
+	} = { isOnItemSelectedResultPg: JSON.stringify(isOnItemSelectedResultPg) };
 
 	userProperties.setProperties(currentUserCardPg);
 }
 
-function setCurrentUserCardPgOnClick(event: IGScriptAppEvent) {
+function getIsBool(boolStr: string) {
+	try {
+		JSON.parse(boolStr);
+
+		return true;
+	} catch (error) {
+		return false;
+	}
+}
+
+function setIsUserOnItemSelectedResultsPgOnClick(event: IGScriptAppEvent) {
+	const isOnItemSelectedResultPg = event.parameters?.isOnItemSelectedResultPg;
+
 	if (
-		!event.parameters?.currentCardPg &&
-		typeof event.parameters?.currentCardPg !== "string"
+		!isOnItemSelectedResultPg ||
+		(!isOnItemSelectedResultPg &&
+			typeof (isOnItemSelectedResultPg !== "string")) ||
+		(typeof isOnItemSelectedResultPg === "string" &&
+			!getIsBool(isOnItemSelectedResultPg))
 	) {
 		return;
 	}
 
 	const userProperties = PropertiesService.getUserProperties();
 	const currentUserCardPg: {
-		[key in TSelectedUserPropertyKey<"currentCardPg">]: string;
-	} = { currentCardPg: event.parameters.currentCardPg };
+		[key in TSelectedUserPropertyKey<"isOnItemSelectedResultPg">]: string;
+	} = { isOnItemSelectedResultPg: isOnItemSelectedResultPg };
 
 	userProperties.setProperties(currentUserCardPg);
 }
 
-function getCacheVal<TData>(cacheKeyName: TUserPropertyKeys): TData | null {
+function setCache(keyName: TUserPropertyKeys) {
+	const userProperties = PropertiesService.getUserProperties();
+
+	// UserProperties.
+}
+
+function getCacheVal(cacheKeyName: TUserPropertyKeys) {
 	const userProperties = PropertiesService.getUserProperties();
 
 	const cacheVal = userProperties.getProperty(cacheKeyName);
@@ -120,5 +136,5 @@ function getCacheVal<TData>(cacheKeyName: TUserPropertyKeys): TData | null {
 	if (!cacheVal) {
 		return null;
 	}
-	return cacheVal as TData;
+	return cacheVal;
 }
