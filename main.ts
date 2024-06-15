@@ -5,12 +5,12 @@
 function handleHomePgRender() {
 	const { createHomePgCards } = HomeCards;
 
-	UrlFetchApp.fetch("https://c018f0e68a78c327e38baaf541e682c9.serveo.net", {
-		method: "post",
-		payload: {
-			map: JSON.stringify("hey"),
-		},
-	});
+	// UrlFetchApp.fetch("https://c018f0e68a78c327e38baaf541e682c9.serveo.net", {
+	// 	method: "post",
+	// 	payload: {
+	// 		map: JSON.stringify("hey"),
+	// 	},
+	// });
 
 	setCurrentUserCardPg("home");
 
@@ -50,13 +50,12 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		selectedGdriveItemSection.addWidget(divider);
 	}
 
-	return CardService.newCardBuilder()
+	const card = CardService.newCardBuilder()
 		.addSection(selectedGdriveItemSection)
 		.build();
-	// const card = CardService.newCardBuilder()
-	// 	.addSection(selectedGdriveItemSection)
-	// 	.build();
-	// const nav = CardService.newNavigation().updateCard(card);
+	const nav = CardService.newNavigation().updateCard(card);
+
+	return nav;
 }
 
 function handleCopyFolderPgRender() {
