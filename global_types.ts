@@ -2,8 +2,8 @@ type TImageStyle =
 	| typeof CardService.ImageStyle.CIRCLE
 	| typeof CardService.ImageStyle.SQUARE;
 type TParameters = { [key: string]: string };
-type TCardPgs = "home" | "copyFiles" | "copyFolders";
-type TUserPropertyKeys = "currentPgCard";
+type TCardPgs = "home" | "folderCopyOptions" | "selectedFoldersToCopy";
+type TUserPropertyKeys = "currentCardPg";
 type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
 	T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 
@@ -29,7 +29,10 @@ interface IDrive {
 	selectedItems: ISelectedItems[];
 	activeCursorItem: ISelectedItems;
 }
-type TParameterKeys = "headerTxt" | "gdriveItemNamesParsable";
+type TParameterKeys =
+	| "headerTxt"
+	| "gdriveItemNamesParsable"
+	| TUserPropertyKeys;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	clientPlatform: string;
 	commonEventObject: ICommonEventObject;

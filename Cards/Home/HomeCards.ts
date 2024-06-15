@@ -31,12 +31,16 @@ const HomeCards = (() => {
 	}
 
 	function createCopyFoldersSec() {
-		const cardAction = CardService.newAction()
-			.setFunctionName("renderCopyFolderCardPg")
-			.setParameters({
-				headerTxt: "The selected folders to copy will appear below: ",
-			});
-		const copyFolderContentOpt = CardService.newTextButton()
+		const cardAction = CardService.newAction();
+
+		cardAction.setFunctionName("renderCopyFolderCardPg").setParameters({
+			headerTxt: "The selected folders to copy will appear below: ",
+		});
+		// cardAction.setFunctionName("setCurrentUserCardPgOnClick").setParameters({
+		// 	currentCardPg: "selectedFoldersToCopy",
+		// });
+
+		const copyFolderContentOptBtn = CardService.newTextButton()
 			.setText("Copy items")
 			.setBackgroundColor("#7AC4FB")
 			.setOnClickAction(cardAction);
@@ -44,7 +48,7 @@ const HomeCards = (() => {
 			.setHeader(
 				"Copy the contents (the sub files/folders) of the selected folders.",
 			)
-			.addWidget(copyFolderContentOpt);
+			.addWidget(copyFolderContentOptBtn);
 		const copyFolderStructureSection = createHomeCardSection(
 			"Copy only the sub folders of the selected parent folders (structure).",
 			"Copy structures",
@@ -55,6 +59,13 @@ const HomeCards = (() => {
 					"The selected folders to copy their structure will appear below: ",
 			},
 		);
+		// const copyFolderStructureCardAction = CardService.newAction()
+		// 	.setFunctionName("setCurrentUserCardPgOnClick")
+		// 	.setParameters({
+		// 		currentCardPg: "selectedFoldersToCopy",
+		// 	});
+
+		// copyFolderStructureSection.addWidget(copyFolderStructureCardAction);
 
 		return {
 			copyFolderItemsSection,

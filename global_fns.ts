@@ -21,7 +21,6 @@ function handleFolderItemsCopy() {
 
 function displayFolderCards() {
 	const { createHeader } = CardServices;
-
 	const copyFolderStructureHeader = createHeader(
 		"Structure copy",
 		IMGS.ICON_FOLDER_STRUCTURE,
@@ -32,7 +31,6 @@ function displayFolderCards() {
 	const copyFolderStructureOptCard = CardService.newCardBuilder()
 		.setHeader(copyFolderStructureHeader)
 		.build();
-
 	const deepCopyHeader = createHeader(
 		"Deep Copy",
 		IMGS.ICON_COPY_FOLDER_OPT,
@@ -43,7 +41,6 @@ function displayFolderCards() {
 	const deepCopyCard = CardService.newCardBuilder()
 		.setHeader(deepCopyHeader)
 		.build();
-
 	const navigation = CardService.newNavigation()
 		.pushCard(copyFolderStructureOptCard)
 		.pushCard(deepCopyCard);
@@ -68,40 +65,49 @@ function getIsParsable<TData extends string>(val: TData) {
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	const { createHomePgCards } = HomeCards;
 	// SET THE local storage to determine where the user is at in the application
-	const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
-	const currentPgCard = getCacheVal<TCardPgs>("currentPgCard");
+	// const url = "https://b7985f7eb0fe9981e5625226ce34da80.serveo.net";
+	const currentCardPg = getCacheVal<TCardPgs>("currentCardPg");
 
-	UrlFetchApp.fetch(url, {
-		method: "post",
-		payload: {
-			map: currentPgCard,
-		},
-	});
+	// UrlFetchApp.fetch(url, {
+	// 	method: "post",
+	// 	payload: {
+	// 		map: currentCardPg,
+	// 	},
+	// });
 
-	if (!currentPgCard || currentPgCard === "home") {
+	if (!currentCardPg || currentCardPg === "home") {
 		const nav = CardService.newNavigation().popToRoot();
 
 		return nav;
 	}
 
 	// notes:
-	// -set the current page to the folderCopy
-	// -get the user's location
-	// -if the user is on the copy folder structure
-
-	// GOAL: take the user to the copy folders page from the copy folders options page.
-
-	// GOAL: display the selected folders to the user, when the user is on the copy folder page
-
-	// if the user is on the share folders ui, then display the selected folders and files as
-	// -cards.
+	// -present the folders that were selected by the user
+	// -the user clicks on a folder
+	// -call 'renderCopyFolderCardPg'
 }
 
 function setCurrentUserCardPg(currentPg: TCardPgs) {
 	const userProperties = PropertiesService.getUserProperties();
 	const currentUserCardPg: {
-		[key in TSelectedUserPropertyKey<"currentPgCard">]: string;
-	} = { currentPgCard: currentPg };
+		[key in TSelectedUserPropertyKey<"currentCardPg">]: string;
+	} = { currentCardPg: currentPg };
+
+	userProperties.setProperties(currentUserCardPg);
+}
+
+function setCurrentUserCardPgOnClick(event: IGScriptAppEvent) {
+	if (
+		!event.parameters?.currentCardPg &&
+		typeof event.parameters?.currentCardPg !== "string"
+	) {
+		return;
+	}
+
+	const userProperties = PropertiesService.getUserProperties();
+	const currentUserCardPg: {
+		[key in TSelectedUserPropertyKey<"currentCardPg">]: string;
+	} = { currentCardPg: event.parameters.currentCardPg };
 
 	userProperties.setProperties(currentUserCardPg);
 }
