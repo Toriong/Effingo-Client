@@ -33,15 +33,15 @@ const HomeCards = (() => {
 	function createCopyFoldersSec() {
 		const cardAction = CardService.newAction();
 		// GOAL: when the user is on the folder selection card, and selects a folder,
-		// have the following to occur: 
-		// -don't show the back button 
-		
-		// WHAT YOU ARE ABLE TO DO: 
-		// -present the home card? 
+		// have the following to occur:
+		// -don't show the back button
+
+		// WHAT YOU ARE ABLE TO DO:
+		// -present the home card?
 		// -call the function that renders the home page
 
 		cardAction.setFunctionName("renderCopyFolderCardPg").setParameters({
-			headerTxt: "The selected folders to copy will appear below: ",
+			headerTxt: "The selected folder to copy will appear below: ",
 		});
 
 		const copyFolderContentOptBtn = CardService.newTextButton()

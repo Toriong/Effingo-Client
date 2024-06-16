@@ -8,13 +8,19 @@ type TSelectedItemsProperty = Record<
 	TSelectedGdriveItemsKeyNames,
 	ISelectedItem[]
 >;
+type TUserPropertiesBoolKeys =
+	| "isOnItemSelectedResultPg"
+	| "hasIsOnItemSelectedResultPgBeenSet"
+	| "isChangingTheCopyFolderDestination";
+type TUserPropertiesBoolProperties = Record<TUserPropertiesBoolKeys, boolean>;
 
-interface TUserProperties extends TSelectedItemsProperty {
-	isOnItemSelectedResultPg: boolean;
-	hasIsOnItemSelectedResultPgBeenSet: boolean;
+interface TUserProperties
+	extends TSelectedItemsProperty,
+		TUserPropertiesBoolProperties {
 	itemSelectedResultPgHeaderTxt: string;
 	headerTxtForGdriveSelectedResultsPg: string;
-	selectedFoldersParsable: string;
+	selectedFolderToCopyParsable: ISelectedItem | null;
+	copyDestinationFolder: string;
 }
 
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys

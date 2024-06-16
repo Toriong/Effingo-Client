@@ -14,9 +14,42 @@ function deleteGdriveItemSelection() {
 	// store all selected items into the user property
 }
 
-function renderCopyFolderCardPg(event: IGScriptAppEvent) {
-	apiServices.post({ map: JSON.stringify(event) });
+function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
+	if (!event.parameters?.selectedFolderToCopyParsable) {
+		return;
+	}
 
+	const { selectedFolderToCopyParsable } = event.parameters;
+
+	if (
+		!getIsParsable(selectedFolderToCopyParsable) &&
+		parseToObj<ISelectedItem>(selectedFolderToCopyParsable) === null
+	) {
+		return;
+	}
+
+	const selectedFolderToCopy = parseToObj<ISelectedItem>(
+		event.parameters.selectedFolderToCopyParsable,
+	);
+
+	setUserProperty("isChangingTheCopyFolderDestination", true);
+	setUserProperty("selectedFolderToCopyParsable", selectedFolderToCopy);
+	const headerTxtParagraph = CardService.newTextParagraph().setText(
+		`<b>Select the copy desintation folder. It must not be '${selectedFolderToCopy.title}' and it must be empty.</b>`,
+	);
+	const headerSection = CardService.newCardSection();
+
+	headerSection.addWidget(headerTxtParagraph);
+
+	const card = CardService.newCardBuilder().addSection(headerSection).build();
+	const nav = CardService.newNavigation().popToRoot().updateCard(card);
+	const actionResponse =
+		CardService.newActionResponseBuilder().setNavigation(nav);
+
+	return actionResponse.build();
+}
+
+function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	if (!event.parameters) {
 		return;
 	}
@@ -24,8 +57,11 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const {
 		headerTxt,
 		hasIsOnItemSelectedResultPgBeenSet,
-		selectedFoldersParsable,
+		selectedFolderToCopyParsable,
+		copyDestinationFolder,
 	} = event.parameters;
+
+	// apiServices.post({ map: selectedFolderToCopyParsable ?? "" });
 
 	if (!headerTxt) {
 		return;
@@ -35,14 +71,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		setUserProperty("isOnItemSelectedResultPg", true);
 	}
 
-	const selectedGdriveItemSection = CardService.newCardSection();
-	const cardAction = CardService.newAction();
-
-	cardAction.setFunctionName("deletGdriveItemSelectionn");
-
-	const deleteBtn = CardService.newImageButton()
-		.setIconUrl(IMGS.ICON_BIN)
-		.setOnClickAction(cardAction);
+	const headerSection = CardService.newCardSection();
 	const divider = CardService.newDivider();
 
 	if (!getUserProperty("headerTxtForGdriveSelectedResultsPg")) {
@@ -52,22 +81,17 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
 		`<b>${headerTxt}</b>`,
 	);
-	let selectedItemsParsed: ISelectedItem[] =
-		selectedFoldersParsable && getIsParsable(selectedFoldersParsable)
-			? JSON.parse(selectedFoldersParsable)
-			: [];
+	const selectedFolder: ISelectedItem =
+		selectedFolderToCopyParsable && getIsParsable(selectedFolderToCopyParsable)
+			? JSON.parse(selectedFolderToCopyParsable)
+			: null;
 
-	selectedGdriveItemSection.addWidget(headerTxtParagraph);
-	selectedItemsParsed = selectedItemsParsed.length
-		? selectedItemsParsed.filter((item) => item.mimeType.includes("folder"))
-		: [];
+	headerSection.addWidget(headerTxtParagraph);
 
-	if (!selectedItemsParsed?.length) {
-		selectedGdriveItemSection.addWidget(divider);
+	if (!selectedFolder) {
+		headerSection.addWidget(divider);
 
-		const card = CardService.newCardBuilder()
-			.addSection(selectedGdriveItemSection)
-			.build();
+		const card = CardService.newCardBuilder().addSection(headerSection).build();
 		const nav = CardService.newNavigation().popToRoot().updateCard(card);
 		const actionResponse =
 			CardService.newActionResponseBuilder().setNavigation(nav);
@@ -75,40 +99,57 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		return actionResponse.build();
 	}
 
+	const deleteBtnCardAction = CardService.newAction();
+
+	deleteBtnCardAction.setFunctionName("deletGdriveItemSelectionn");
+
+	const deleteBtn = CardService.newImageButton()
+		.setIconUrl(IMGS.ICON_BIN)
+		.setOnClickAction(deleteBtnCardAction);
+	const changeCopyDestinationFolderBtnAction = CardService.newAction();
+
+	// create a function for this logic
+	changeCopyDestinationFolderBtnAction
+		.setFunctionName("handleChangeCopyDestinationFolderBtn")
+		.setParameters({
+			selectedFolderToCopyParsable: JSON.stringify(selectedFolder),
+		});
+
+	const changeCopyDestinationFolderBtn = CardService.newTextButton()
+		.setText("Change The Copy Destination Folder.")
+		.setBackgroundColor("#F0F0F0")
+		.setOnClickAction(changeCopyDestinationFolderBtnAction);
 	const card = CardService.newCardBuilder();
+	const cardSection = CardService.newCardSection();
 
-	card.addSection(selectedGdriveItemSection);
+	card.addSection(headerSection);
 
-	let selectedItems = selectedItemsParsed.map((item) => ({
-		...item,
-		cardSection: CardService.newCardSection(),
-	}));
-	// create a card section for folder
-	// go through the value in the array of selectedItems, and create a cardSection
-	// -implement the map method on selectedItems, and return the CardSection for the field
-	// after the array is created, loop through using for of and add the widgets
-	selectedItems = selectedItems.map((item) => {
-		const { title, cardSection } = item;
-		const titleWidget = CardService.newTextParagraph().setText(title);
+	const selectedFolderToCopyTxtWidget = CardService.newTextParagraph().setText(
+		`<b>Selected Folder</b>: <i>${selectedFolder.title}</i>`,
+	);
+	const copyDestinationFolderTxt =
+		typeof copyDestinationFolder === "string" &&
+		getIsParsable(copyDestinationFolder)
+			? `My Drive/${parseToObj<ISelectedItem>(copyDestinationFolder).title}`
+			: `My Drive/${selectedFolder.title} COPY`;
+	const copyDestinationFolderTxtWidget = CardService.newTextParagraph().setText(
+		`<b>Copy Folder Destination</b>: <i>${copyDestinationFolderTxt}</i>`,
+	);
 
-		cardSection.addWidget(titleWidget);
-		cardSection.addWidget(deleteBtn);
-		// cardSection.addWidget(divider);
+	cardSection.addWidget(selectedFolderToCopyTxtWidget);
+	cardSection.addWidget(copyDestinationFolderTxtWidget);
 
-		return { ...item, cardSection: cardSection };
-	});
-
-	apiServices.post({ map: JSON.stringify(selectedItems) });
-
-	for (const { cardSection } of selectedItems) {
-		card.addSection(cardSection);
+	if (!copyDestinationFolder) {
+		const headerTxtParagraph = CardService.newTextParagraph().setText(
+			"*We will create this folder for you.",
+		);
+		cardSection.addWidget(headerTxtParagraph);
 	}
 
-	// card.addSection(selectedItems[0].cardSection);
-
-	const nav = CardService.newNavigation().popToRoot().pushCard(card.build());
-	const actionResponse =
-		CardService.newActionResponseBuilder().setNavigation(nav).setStateChanged(true);
+	cardSection.addWidget(divider);
+	cardSection.addWidget(changeCopyDestinationFolderBtn);
+	cardSection.addWidget(deleteBtn);
+	card.addSection(cardSection);
 
 	return card.build();
 }
