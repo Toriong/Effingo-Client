@@ -45,14 +45,63 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 	setUserProperty("isChangingTheCopyFolderDestination", true);
 	setUserProperty("selectedFolderToCopyParsable", selectedFolderToCopy);
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
-		`<b>Select the copy desintation folder. It must not be '${selectedFolderToCopy.title}' and it must be empty.</b>`,
+		"<b>Select the copy destination folder.</b>",
 	);
-	const headerSection = CardService.newCardSection();
+	// when the user clicks on the View Children Button, have the following to occur:
+	// -get the children for that specific folder
+	// -test how the ui will be displayed
+	const action = CardService.newAction().setFunctionName("handleOnClick");
+	const testFolderASectionTitle =
+		CardService.newTextParagraph().setText("Folder A");
+	const testFolderAViewChildrenBtn = CardService.newTextButton()
+		.setText("View Children")
+		.setBackgroundColor(COLORS.SMOKEY_GREY)
+		.setOnClickAction(action);
+	const testFolderASelectedFolderBtn = CardService.newTextButton()
+		.setText("Select Folder")
+		.setOnClickAction(action);
+	const testFolderBSectionTitle =
+		CardService.newTextParagraph().setText("Folder A");
+	const testFolderBViewChildrenBtn = CardService.newTextButton()
+		.setText("View Children")
+		.setBackgroundColor(COLORS.SMOKEY_GREY)
+		.setOnClickAction(action);
+	const testFolderBSelectedFolderBtn = CardService.newTextButton()
+		.setText("Select Folder")
+		.setOnClickAction(action);
+	const headerSection =
+		CardService.newCardSection().addWidget(headerTxtParagraph);
+	const testCardSection1 = CardService.newCardSection();
+	const testCardSection2 = CardService.newCardSection();
 
-	headerSection.addWidget(headerTxtParagraph);
+	testCardSection1.addWidget(testFolderASectionTitle);
 
-	const card = CardService.newCardBuilder().addSection(headerSection).build();
-	const nav = CardService.newNavigation().popToRoot().updateCard(card);
+	testCardSection1.addWidget(testFolderAViewChildrenBtn);
+
+	testCardSection1.addWidget(testFolderASelectedFolderBtn);
+
+	testCardSection2.addWidget(testFolderBSectionTitle);
+
+	testCardSection2.addWidget(testFolderBViewChildrenBtn);
+
+	testCardSection2.addWidget(testFolderBSelectedFolderBtn);
+
+	// folder:
+	// view children
+	// select folder
+	// each folder will be a section
+	const footer = CardService.newFixedFooter().setPrimaryButton(
+		CardService.newTextButton()
+			.setText("Back To Selected Folder.")
+			.setOnClickAction(action),
+	);
+	const card = CardService.newCardBuilder()
+		.addSection(headerSection)
+		.addSection(testCardSection1)
+		.addSection(testCardSection2)
+		.setFixedFooter(footer);
+	// .build();
+	const nav = CardService.newNavigation().popToRoot().updateCard(card.build());
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
 
@@ -127,7 +176,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 
 	const changeCopyDestinationFolderBtn = CardService.newTextButton()
 		.setText("Change The Copy Destination Folder.")
-		.setBackgroundColor("#F0F0F0")
+		.setBackgroundColor(COLORS.SMOKEY_GREY)
 		.setOnClickAction(changeCopyDestinationFolderBtnAction);
 	const card = CardService.newCardBuilder();
 	const cardSection = CardService.newCardSection();

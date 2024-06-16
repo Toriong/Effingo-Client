@@ -39,9 +39,11 @@ const IMGS = (() => {
 })();
 const COLORS = (() => {
 	const ACTION_BTN_COLOR = "#7AC4FB";
+	const SMOKEY_GREY = "#F0F0F0";
 
 	return {
 		ACTION_BTN_COLOR,
+		SMOKEY_GREY,
 	};
 })();
 const CARDSERVICE_VARS = (() => {
