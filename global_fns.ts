@@ -67,6 +67,8 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		"isOnItemSelectedResultPg",
 	);
 
+	apiServices.post({ map: JSON.stringify(isOnItemSelectedResultPgStr) });
+
 	if (
 		!isOnItemSelectedResultPgStr ||
 		(getIsBool(isOnItemSelectedResultPgStr) &&
@@ -164,9 +166,11 @@ function setUserProperty<
 	userProperties.setProperty(keyName, JSON.stringify(val));
 }
 
+function resetUserProperties() {
+	const userProperties = PropertiesService.getUserProperties();
 
-
-
+	userProperties.deleteAllProperties();
+}
 
 function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	const userProperties = PropertiesService.getUserProperties();

@@ -3,11 +3,11 @@
  */
 
 function handleHomePgRender() {
-	const { createHomePgCards } = HomeCards;
+	resetUserProperties();
 
 	setUserProperty("isOnItemSelectedResultPg", false);
 
-	return createHomePgCards();
+	return HomeCards.createHomePgCards();
 }
 
 function deleteGdriveItemSelection() {
