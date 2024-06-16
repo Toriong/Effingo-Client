@@ -67,11 +67,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		"isOnItemSelectedResultPg",
 	);
 
-	// CASE: the user goes to the copy folder result page and selects an item
-	// GOAL: re-render the whole page with the newly selected item append to the current list
-
-	// Display all of the gdrive items to the user.
-
 	if (
 		!isOnItemSelectedResultPgStr ||
 		(getIsBool(isOnItemSelectedResultPgStr) &&
@@ -82,11 +77,27 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		return nav;
 	}
 
-	// the user is on the item selected results page
-	// get the header txt from userPropties field
-	const selectedFoldersStr = getUserProperty("selectedFolders");
+	if (!event.drive.activeCursorItem?.mimeType.includes("folder")) {
+		return;
+	}
 
+	const selectedFoldersStr = getUserProperty("selectedFolders");
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
+	const selectedFolders: ISelectedItem[] =
+		selectedFoldersStr && getIsParsable(selectedFoldersStr)
+			? JSON.parse(selectedFoldersStr)
+			: [];
+
+	selectedFolders.push(event.drive.activeCursorItem);
+
+	setUserProperty("selectedFolders", selectedFolders);
+
+	// CASE: 'selectedFoldersStr' is null
+	// create a new array that will hold of the selcted items and put the selected gdrive item
+	// -into that array
+
+	// CASE: 'selectedFoldersStr' is not null, it is a string
+	// parse in order to get the saved gdrive items that were saved, push the selected item
 
 	if (!event.parameters) {
 		event.parameters = {};
@@ -95,7 +106,7 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	Object.assign(event.parameters, {
 		hasIsOnItemSelectedResultPgBeenSet: true,
 		headerTxt: JSON.parse(headerTxt as string),
-		selectedFoldersParsable: selectedFoldersStr,
+		selectedFoldersParsable: JSON.stringify(selectedFolders),
 	});
 
 	// UrlFetchApp.fetch("https://sixty-bushes-shine.loca.lt/", {
@@ -150,9 +161,12 @@ function setUserProperty<
 	TDataB extends TDynamicCacheVal<TDataA>,
 >(keyName: TDataA, val: TDataB) {
 	const userProperties = PropertiesService.getUserProperties();
-
 	userProperties.setProperty(keyName, JSON.stringify(val));
 }
+
+
+
+
 
 function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	const userProperties = PropertiesService.getUserProperties();
@@ -163,3 +177,20 @@ function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	}
 	return cacheVal;
 }
+const apiServices = (() => {
+	class API_SERVICES {
+		#origin: string;
+
+		constructor() {
+			this.#origin = "https://tidy-beans-poke.loca.lt";
+		}
+		get(path = "") {
+			UrlFetchApp.fetch(`${this.#origin}/${path}`);
+		}
+		post(payload: { [key: string]: string }, path = "") {
+			UrlFetchApp.fetch(`${this.#origin}/${path}`, { payload });
+		}
+	}
+
+	return new API_SERVICES();
+})();

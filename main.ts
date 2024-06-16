@@ -14,12 +14,9 @@ function deleteGdriveItemSelection() {
 	// store all selected items into the user property
 }
 
-// GOAL: create two functions:
-// function 1: will handle the first render of the page
-
-// function 2: will update the results page of clicked gdrive items
-
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
+	apiServices.post({ map: JSON.stringify(event) });
+
 	if (!event.parameters) {
 		return;
 	}
@@ -60,12 +57,14 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 			? JSON.parse(selectedFoldersParsable)
 			: [];
 
-	selectedGdriveItemSection.addWidget(headerTxtParagraph).addWidget(divider);
+	selectedGdriveItemSection.addWidget(headerTxtParagraph);
 	selectedItemsParsed = selectedItemsParsed.length
 		? selectedItemsParsed.filter((item) => item.mimeType.includes("folder"))
 		: [];
 
 	if (!selectedItemsParsed?.length) {
+		selectedGdriveItemSection.addWidget(divider);
+
 		const card = CardService.newCardBuilder()
 			.addSection(selectedGdriveItemSection)
 			.build();
@@ -77,6 +76,9 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	}
 
 	const card = CardService.newCardBuilder();
+
+	card.addSection(selectedGdriveItemSection);
+
 	let selectedItems = selectedItemsParsed.map((item) => ({
 		...item,
 		cardSection: CardService.newCardSection(),
@@ -85,23 +87,30 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	// go through the value in the array of selectedItems, and create a cardSection
 	// -implement the map method on selectedItems, and return the CardSection for the field
 	// after the array is created, loop through using for of and add the widgets
-	selectedItems = selectedItems.map(({ title, mimeType, cardSection }) => {
-		cardSection.addWidget;
-	});
-
-	for (const { title, mimeType, cardSection } of selectedItems) {
-		if (!mimeType.includes("folder")) {
-			continue;
-		}
-
+	selectedItems = selectedItems.map((item) => {
+		const { title, cardSection } = item;
 		const titleWidget = CardService.newTextParagraph().setText(title);
 
 		cardSection.addWidget(titleWidget);
 		cardSection.addWidget(deleteBtn);
-		cardSection.addWidget(divider);
+		// cardSection.addWidget(divider);
+
+		return { ...item, cardSection: cardSection };
+	});
+
+	apiServices.post({ map: JSON.stringify(selectedItems) });
+
+	for (const { cardSection } of selectedItems) {
+		card.addSection(cardSection);
 	}
 
-	return card;
+	// card.addSection(selectedItems[0].cardSection);
+
+	const nav = CardService.newNavigation().popToRoot().updateCard(card.build());
+	const actionResponse =
+		CardService.newActionResponseBuilder().setNavigation(nav);
+
+	return actionResponse.build();
 }
 
 function handleCopyFolderPgRender() {
