@@ -14,6 +14,16 @@ function deleteGdriveItemSelection() {
 	// store all selected items into the user property
 }
 
+// for the ui, give the user two options:
+// -text input search
+// -or show all available folders that the user can choose from
+
+// DO FIRST: show all available folders to the user, and perform a pagination.
+// WHAT TO SEND TO THE SERVER:
+// -the page token for the listing function on the server
+// -get all of the root folders
+// -if the user clicks on the root folder, then get the immediate children folders for that folder
+
 function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 	if (!event.parameters?.selectedFolderToCopyParsable) {
 		return;

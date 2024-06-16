@@ -67,7 +67,7 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	request.post({ map: JSON.stringify(event) });
+	// request.post({ map: JSON.stringify(event) });
 
 	const isOnItemSelectedResultPgStr = getUserProperty(
 		"isOnItemSelectedResultPg",
