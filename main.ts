@@ -106,11 +106,11 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 
 	// card.addSection(selectedItems[0].cardSection);
 
-	const nav = CardService.newNavigation().popToRoot().updateCard(card.build());
+	const nav = CardService.newNavigation().popToRoot().pushCard(card.build());
 	const actionResponse =
-		CardService.newActionResponseBuilder().setNavigation(nav);
+		CardService.newActionResponseBuilder().setNavigation(nav).setStateChanged(true);
 
-	return actionResponse.build();
+	return card.build();
 }
 
 function handleCopyFolderPgRender() {

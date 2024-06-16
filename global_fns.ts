@@ -182,7 +182,7 @@ const apiServices = (() => {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://tidy-beans-poke.loca.lt";
+			this.#origin = "https://angry-moles-dream.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);
