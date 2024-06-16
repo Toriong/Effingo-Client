@@ -55,14 +55,17 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
 		`<b>${headerTxt}</b>`,
 	);
-	const selectedItems: ISelectedItem[] =
+	let selectedItemsParsed: ISelectedItem[] =
 		selectedFoldersParsable && getIsParsable(selectedFoldersParsable)
 			? JSON.parse(selectedFoldersParsable)
 			: [];
 
 	selectedGdriveItemSection.addWidget(headerTxtParagraph).addWidget(divider);
+	selectedItemsParsed = selectedItemsParsed.length
+		? selectedItemsParsed.filter((item) => item.mimeType.includes("folder"))
+		: [];
 
-	if (!selectedItems?.length) {
+	if (!selectedItemsParsed?.length) {
 		const card = CardService.newCardBuilder()
 			.addSection(selectedGdriveItemSection)
 			.build();
@@ -73,21 +76,30 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		return actionResponse.build();
 	}
 
-	for (const { title, mimeType } of selectedItems) {
+	const card = CardService.newCardBuilder();
+	let selectedItems = selectedItemsParsed.map((item) => ({
+		...item,
+		cardSection: CardService.newCardSection(),
+	}));
+	// create a card section for folder
+	// go through the value in the array of selectedItems, and create a cardSection
+	// -implement the map method on selectedItems, and return the CardSection for the field
+	// after the array is created, loop through using for of and add the widgets
+	selectedItems = selectedItems.map(({ title, mimeType, cardSection }) => {
+		cardSection.addWidget;
+	});
+
+	for (const { title, mimeType, cardSection } of selectedItems) {
 		if (!mimeType.includes("folder")) {
 			continue;
 		}
 
 		const titleWidget = CardService.newTextParagraph().setText(title);
 
-		selectedGdriveItemSection.addWidget(titleWidget);
-		selectedGdriveItemSection.addWidget(deleteBtn);
-		selectedGdriveItemSection.addWidget(divider);
+		cardSection.addWidget(titleWidget);
+		cardSection.addWidget(deleteBtn);
+		cardSection.addWidget(divider);
 	}
-
-	const card = CardService.newCardBuilder()
-		.addSection(selectedGdriveItemSection)
-		.build();
 
 	return card;
 }
