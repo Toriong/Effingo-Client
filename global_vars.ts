@@ -21,8 +21,22 @@ const IMGS = (() => {
 	const ICON_RIGHT_ARROW =
 		"https://effingo.s3.us-east-2.amazonaws.com/right-arrow.png";
 	const ICON_BIN = "https://effingo.s3.us-east-2.amazonaws.com/bin.png";
+	const TOOLS = "https://effingo.s3.us-east-2.amazonaws.com/tools.png";
+	const HOME = "https://effingo.s3.us-east-2.amazonaws.com/home.png";
+	const SEARCH = "https://effingo.s3.us-east-2.amazonaws.com/search.png";
+	const LINK = "https://effingo.s3.us-east-2.amazonaws.com/external-link.png";
+	const JOBS_PAST =
+		"https://effingo.s3.us-east-2.amazonaws.com/history-icon.png";
+	const JOBS_CURRENT =
+		"https://effingo.s3.us-east-2.amazonaws.com/jobs-current.png";
 
 	return {
+		JOBS_PAST,
+		JOBS_CURRENT,
+		LINK,
+		HOME,
+		SEARCH,
+		TOOLS,
 		COPY_ICON,
 		PERMISSIONS_ICON,
 		SHARE_ICON,

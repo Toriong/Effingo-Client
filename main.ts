@@ -100,7 +100,6 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 		.addSection(testCardSection1)
 		.addSection(testCardSection2)
 		.setFixedFooter(footer);
-	// .build();
 	const nav = CardService.newNavigation().pushCard(card.build());
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
