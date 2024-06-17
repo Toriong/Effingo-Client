@@ -101,11 +101,11 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 		.addSection(testCardSection2)
 		.setFixedFooter(footer);
 	// .build();
-	const nav = CardService.newNavigation().popToRoot().updateCard(card.build());
+	const nav = CardService.newNavigation().pushCard(card.build());
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
 
-	return actionResponse.build();
+	return card.build();
 }
 
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
@@ -151,11 +151,11 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		headerSection.addWidget(divider);
 
 		const card = CardService.newCardBuilder().addSection(headerSection).build();
-		const nav = CardService.newNavigation().popToRoot().updateCard(card);
+		const nav = CardService.newNavigation().pushCard(card);
 		const actionResponse =
 			CardService.newActionResponseBuilder().setNavigation(nav);
 
-		return actionResponse.build();
+		return card;
 	}
 
 	const deleteBtnCardAction = CardService.newAction();
@@ -209,6 +209,10 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	cardSection.addWidget(changeCopyDestinationFolderBtn);
 	cardSection.addWidget(deleteBtn);
 	card.addSection(cardSection);
+
+	const nav = CardService.newNavigation().pushCard(card.build());
+	const actionResponse =
+		CardService.newActionResponseBuilder().setNavigation(nav);
 
 	return card.build();
 }

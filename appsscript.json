@@ -18,13 +18,7 @@
 			"homepageTrigger": {
 				"runFunction": "handleHomePgRender",
 				"enabled": true
-			},
-			"universalActions": [
-				{
-					"label": "Learn more about Cataas",
-					"openLink": "https://cataas.com"
-				}
-			]
+			}
 		},
 		"drive": {
 			"onItemsSelectedTrigger": {

@@ -67,7 +67,7 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	// request.post({ map: JSON.stringify(event) });
+	request.post({ map: JSON.stringify(event.drive.selectedItems) });
 
 	const isOnItemSelectedResultPgStr = getUserProperty(
 		"isOnItemSelectedResultPg",
@@ -121,9 +121,12 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		(getIsBool(isOnItemSelectedResultPgStr) &&
 			!JSON.parse(isOnItemSelectedResultPgStr))
 	) {
-		const nav = CardService.newNavigation().popToRoot();
+		const nav = CardService.newNavigation().popCard();
+		const actionResponse = CardService.newActionResponseBuilder()
+			.setNavigation(nav)
+			.setStateChanged(true);
 
-		return nav;
+		return actionResponse.build();
 	}
 
 	if (!event.drive.activeCursorItem?.mimeType.includes("folder")) {
@@ -149,10 +152,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 			copyDestinationFolder: JSON.stringify(event.drive.activeCursorItem),
 		});
 
-		// WHAT IS HAPPENING:
-		//
-
-		// resetUserProperties();
 		setUserProperty("isChangingTheCopyFolderDestination", false);
 		setUserProperty("selectedFolderToCopyParsable", null);
 
@@ -164,8 +163,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		headerTxt: JSON.parse(headerTxt as string),
 		selectedFolderToCopyParsable: JSON.stringify(event.drive.activeCursorItem),
 	});
-
-	// resetUserProperties();
 
 	return renderCopyFolderCardPg(event);
 }
@@ -238,7 +235,7 @@ const request = (() => {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://fruity-friends-film.loca.lt";
+			this.#origin = "https://large-streets-clean.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);
