@@ -157,14 +157,16 @@ const HomeCards = (() => {
 				"See what permissions that users have for your folders and files.",
 			)
 			.setWrapText(true);
+		const featureWarningTxt =
+			"<u>This feature is only available for our chrome extension version.</u>";
 		const ultraShareSectionTxt = CardService.newDecoratedText()
 			.setText(
-				"Share multiple folders and files at once regardless if they are nested. <i>This feature is only available for our chrome extension version.</i>",
+				`Share multiple folders and files at once regardless if they are nested. ${featureWarningTxt}`,
 			)
 			.setWrapText(true);
 		const hoverPermissionsTxt = CardService.newDecoratedText()
 			.setText(
-				"View the permissions of the files or folders when you hover over them. <i>This feature is only available for our chrome extension version.</i>",
+				`View the permissions of the files or folders when you hover over them. ${featureWarningTxt}`,
 			)
 			.setWrapText(true);
 		const moreToolsHeaderTxt = CardService.newDecoratedText()
