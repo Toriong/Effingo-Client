@@ -67,11 +67,7 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	request.post({ map: JSON.stringify(event.drive.selectedItems) });
-
-	const isOnItemSelectedResultPgStr = getUserProperty(
-		"isOnItemSelectedResultPg",
-	);
+	// request.post({ map: JSON.stringify(event.drive.selectedItems) });
 	const isChangingTheCopyFolderDestinationStr = getUserProperty(
 		"isChangingTheCopyFolderDestination",
 	);
@@ -115,23 +111,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	// thet next click for a folder, pass the following parameter for the parameter object:
 	// -copyDestinationFolder: the ISelectItem folder
 	// -change 'isChangingTheCopyFolderDestination' to false
-
-	if (
-		!isOnItemSelectedResultPgStr ||
-		(getIsBool(isOnItemSelectedResultPgStr) &&
-			!JSON.parse(isOnItemSelectedResultPgStr))
-	) {
-		const nav = CardService.newNavigation().popCard();
-		const actionResponse = CardService.newActionResponseBuilder()
-			.setNavigation(nav)
-			.setStateChanged(true);
-
-		return actionResponse.build();
-	}
-
-	if (!event.drive.activeCursorItem?.mimeType.includes("folder")) {
-		return;
-	}
 
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
@@ -235,7 +214,7 @@ const request = (() => {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://large-streets-clean.loca.lt";
+			this.#origin = "https://eight-mugs-report.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);

@@ -3,10 +3,6 @@
  */
 
 function handleHomePgRender() {
-	resetUserProperties();
-
-	setUserProperty("isOnItemSelectedResultPg", false);
-
 	return HomeCards.createHomePgCards();
 }
 
@@ -108,22 +104,17 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 }
 
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
+	request.post({ map: JSON.stringify(event) });
+
 	if (!event.parameters) {
 		return;
 	}
 
 	const {
-		headerTxt,
 		hasIsOnItemSelectedResultPgBeenSet,
 		selectedFolderToCopyParsable,
 		copyDestinationFolder,
 	} = event.parameters;
-
-	// apiServices.post({ map: selectedFolderToCopyParsable ?? "" });
-
-	if (!headerTxt) {
-		return;
-	}
 
 	if (!hasIsOnItemSelectedResultPgBeenSet) {
 		setUserProperty("isOnItemSelectedResultPg", true);
@@ -131,13 +122,8 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 
 	const headerSection = CardService.newCardSection();
 	const divider = CardService.newDivider();
-
-	if (!getUserProperty("headerTxtForGdriveSelectedResultsPg")) {
-		setUserProperty("headerTxtForGdriveSelectedResultsPg", headerTxt);
-	}
-
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
-		`<b>${headerTxt}</b>`,
+		"<b>The selected folder to copy will appear below: </b>",
 	);
 	const selectedFolder: ISelectedItem =
 		selectedFolderToCopyParsable && getIsParsable(selectedFolderToCopyParsable)
@@ -154,7 +140,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		const actionResponse =
 			CardService.newActionResponseBuilder().setNavigation(nav);
 
-		return card;
+		return actionResponse.build();
 	}
 
 	const deleteBtnCardAction = CardService.newAction();
@@ -213,7 +199,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
 
-	return card.build();
+	return actionResponse.build();
 }
 
 function handleCopyFolderPgRender() {
