@@ -92,6 +92,7 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 			.setOnClickAction(action),
 	);
 	const card = CardService.newCardBuilder()
+		.setName("selectCopyFolderDestination")
 		.addSection(headerSection)
 		.addSection(testCardSection1)
 		.addSection(testCardSection2)
@@ -104,69 +105,24 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 }
 
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
-	request.post({ map: JSON.stringify(event) });
+	// request.post({ map: JSON.stringify(event) });
 
 	if (!event.parameters) {
 		return;
 	}
 
 	const {
-		hasIsOnItemSelectedResultPgBeenSet,
 		selectedFolderToCopyParsable,
 		copyDestinationFolder,
 	} = event.parameters;
 
-	if (!hasIsOnItemSelectedResultPgBeenSet) {
-		setUserProperty("isOnItemSelectedResultPg", true);
-	}
-
-	const headerSection = CardService.newCardSection();
-	const divider = CardService.newDivider();
-	const headerTxtParagraph = CardService.newTextParagraph().setText(
-		"<b>The selected folder to copy will appear below: </b>",
-	);
 	const selectedFolder: ISelectedItem =
 		selectedFolderToCopyParsable && getIsParsable(selectedFolderToCopyParsable)
 			? JSON.parse(selectedFolderToCopyParsable)
 			: null;
 
-	headerSection.addWidget(headerTxtParagraph);
-
-	if (!selectedFolder) {
-		headerSection.addWidget(divider);
-
-		const card = CardService.newCardBuilder().addSection(headerSection).build();
-		const nav = CardService.newNavigation().pushCard(card);
-		const actionResponse =
-			CardService.newActionResponseBuilder().setNavigation(nav);
-
-		return actionResponse.build();
-	}
-
-	const deleteBtnCardAction = CardService.newAction();
-
-	deleteBtnCardAction.setFunctionName("deletGdriveItemSelectionn");
-
-	const deleteBtn = CardService.newImageButton()
-		.setIconUrl(IMGS.ICON_BIN)
-		.setOnClickAction(deleteBtnCardAction);
-	const changeCopyDestinationFolderBtnAction = CardService.newAction();
-
-	// create a function for this logic
-	changeCopyDestinationFolderBtnAction
-		.setFunctionName("handleChangeCopyDestinationFolderBtn")
-		.setParameters({
-			selectedFolderToCopyParsable: JSON.stringify(selectedFolder),
-		});
-
-	const changeCopyDestinationFolderBtn = CardService.newTextButton()
-		.setText("Change The Copy Destination Folder.")
-		.setBackgroundColor(COLORS.SMOKEY_GREY)
-		.setOnClickAction(changeCopyDestinationFolderBtnAction);
 	const card = CardService.newCardBuilder();
 	const cardSection = CardService.newCardSection();
-
-	card.addSection(headerSection);
 
 	const selectedFolderToCopyTxtWidget = CardService.newTextParagraph().setText(
 		`<b>Selected Folder</b>: <i>${selectedFolder.title}</i>`,
@@ -177,23 +133,67 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 			? `My Drive/${parseToObj<ISelectedItem>(copyDestinationFolder).title}`
 			: `My Drive/${selectedFolder.title} COPY`;
 	const copyDestinationFolderTxtWidget = CardService.newTextParagraph().setText(
-		`<b>Copy Folder Destination</b>: <i>${copyDestinationFolderTxt}</i>`,
+		`Copy Folder Destination: <i>${copyDestinationFolderTxt}</i>`,
 	);
+	const copyFolderOpt = CardService.newTextParagraph().setText(
+		"<b><u>Copy Folder Options</u></b>",
+	);
+	const cardServiceOptionsTxtSec =
+		CardService.newCardSection().addWidget(copyFolderOpt);
+	const copyFolderAction = CardService.newAction()
+		.setFunctionName("handleChangeCopyDestinationFolderBtn")
+		.setParameters({
+			selectedFolderToCopyParsable: JSON.stringify(selectedFolder),
+		});
+	const copyFolderDestinationBtn = CardService.newTextButton()
+		.setText("Change Copy Folder Destination.")
+		.setBackgroundColor(COLORS.SMOKEY_GREY)
+		.setOnClickAction(copyFolderAction) 
+
+	cardServiceOptionsTxtSec.addWidget(copyDestinationFolderTxtWidget)
+
+	cardServiceOptionsTxtSec.addWidget(copyFolderDestinationBtn)
+
+	const willCopyFoldersOnly = false;
+	const willIncludesTheSamePermissions = false;
+	const copyOnlyFoldersSwitch = CardService.newDecoratedText()
+		.setText("Copy only the folder structure.")
+		.setWrapText(true)
+		.setSwitchControl(
+			CardService.newSwitch()
+				.setFieldName("willCopyFoldersOnly")
+				.setValue(JSON.stringify(willCopyFoldersOnly))
+				.setOnChangeAction(
+					CardService.newAction().setFunctionName("handleSwitchChange"),
+				),
+		);
+	const includeTheSamePermissionsSwitch = CardService.newDecoratedText()
+		.setText(
+			"Include the same permissions (the folders and files will be shared with the same users).",
+		)
+		.setWrapText(true)
+		.setSwitchControl(
+			CardService.newSwitch()
+				.setFieldName("willCopyOnlyTheFiles")
+				.setValue(JSON.stringify(willIncludesTheSamePermissions))
+				.setOnChangeAction(
+					CardService.newAction().setFunctionName("handleSwitchChange"),
+				),
+		);
+	const cardHeader = CardService.newCardHeader()
+		.setTitle("Copy & Permissions")
+		.setSubtitle("Your selected item will appear below.")
+		.setImageUrl(IMGS.TOOLS);
 
 	cardSection.addWidget(selectedFolderToCopyTxtWidget);
-	cardSection.addWidget(copyDestinationFolderTxtWidget);
+	cardServiceOptionsTxtSec.addWidget(includeTheSamePermissionsSwitch);
+	cardServiceOptionsTxtSec.addWidget(copyOnlyFoldersSwitch);
 
-	if (!copyDestinationFolder) {
-		const headerTxtParagraph = CardService.newTextParagraph().setText(
-			"*We will create this folder for you.",
-		);
-		cardSection.addWidget(headerTxtParagraph);
-	}
+	card.setHeader(cardHeader);
 
-	cardSection.addWidget(divider);
-	cardSection.addWidget(changeCopyDestinationFolderBtn);
-	cardSection.addWidget(deleteBtn);
 	card.addSection(cardSection);
+
+	card.addSection(cardServiceOptionsTxtSec);
 
 	const nav = CardService.newNavigation().pushCard(card.build());
 	const actionResponse =

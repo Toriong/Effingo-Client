@@ -67,67 +67,49 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	// request.post({ map: JSON.stringify(event.drive.selectedItems) });
+	request.post({ map: JSON.stringify(event) });
+
+	// MAIN GOAL: the user has selcted the following for copying a folder:
+	// -copy just the folders
+	// -copy the same permissions
+
+	// CASE: the user selects a folder to copy 
+	// MAIN GOAL: store the id of the folder into the user property service as the key 
+	// the following is stored in the user property service: 
+	// { [the folder id]: { folder name, options: { willCopyFoldersOnly: bool, willCopySamePermissions: bool }, mimeType, and the rest of the interface  } }
+	
+	// use 'clickedGdriveItems' property to get the target gdrive item that was select via its id
+	
+	// using the id of the select gdrive item, get the target gdrive
+
+
+	const selectedGdriveItemProperty = getUserPropertyParsed<TClickedGdriveItems>("selectedGdriveItems")
 	const isChangingTheCopyFolderDestinationStr = getUserProperty(
 		"isChangingTheCopyFolderDestination",
 	);
-	const selectedFolderToCopyParsable = getUserProperty(
-		"selectedFolderToCopyParsable",
-	);
+
 	const isChangingTheCopyFolderDestination =
-		isChangingTheCopyFolderDestinationStr &&
-		getIsParsable(isChangingTheCopyFolderDestinationStr)
+		(isChangingTheCopyFolderDestinationStr &&
+		getIsParsable(isChangingTheCopyFolderDestinationStr))
 			? JSON.parse(isChangingTheCopyFolderDestinationStr)
 			: null;
-
-	// GOAL: store the value for 'event.drive.activeCursorItem' into 'event.parameters.copyDestinationFolder' when
-
-	// EXECUTION PLAN:
-	// execute renderCopyFolderCardPg(event)
-	// -set 'isChangingTheCopyFolderDestination' to false
-	// -set selectedFolderToCopyParsable to a empty string
-	// -pass the below value for event.parameters.selectedFolderToCopyParsable
-	// -get the value for selectedFolderToCopyParsable from the UserProperty state
-	// -the value of event.drive.activeCursorItem stored for 'event.parameters.copyDestinationFolder'
-	// -isChangingTheCopyFolderDestination is true
-
-	// if isChangingTheCopyFolderDestination is true, then the do following:
-	// set the field of 'selectedFolderToCopyParsable' of the parameters objecte to the value stored
-	// -for 'selectedFolderToCopyParsable' for the user properties state
-
-	// GOAL #A: when the user clicks on the "Change Copy Folder Destination" present the ui without the back button
-
-	// GOAL #B: when the user clicks on copy folder destination, present the ui again with the copy folder destination updated
-	// -The folder selected must not match the current folder that was selected.
-	// -store the following to the userProperty service:  isChangingTheCopyFolderDestination = true
-
-	// IN ORDER TO CHANGE THE COPY DESTINATION FOLDER, PRESENT THE FOLLOWING BUTTON TO THE USER:
-	// CHANGE COPY DESTINATION
-
-	// when clicked, have the following to occur:
-	// -change the text to CLICK COPY DESTINATION FOLDER
-	// -store the following property: isChangingTheCopyFolderDestination: true
-
-	// thet next click for a folder, pass the following parameter for the parameter object:
-	// -copyDestinationFolder: the ISelectItem folder
-	// -change 'isChangingTheCopyFolderDestination' to false
-
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
 	if (!event.parameters) {
 		event.parameters = {};
 	}
 
+	let selctedGdriveItemKey = event.drive?.activeCursorItem?.id ?? "";
+
 	if (
 		isChangingTheCopyFolderDestination !== null &&
 		isChangingTheCopyFolderDestination &&
-		selectedFolderToCopyParsable &&
-		getIsParsable(selectedFolderToCopyParsable)
+		selectedGdriveItemProperty?.[selctedGdriveItemKey]
 	) {
 		Object.assign(event.parameters, {
 			hasIsOnItemSelectedResultPgBeenSet: true,
 			headerTxt: JSON.parse(headerTxt as string),
-			selectedFolderToCopyParsable: selectedFolderToCopyParsable,
+			selectedFolderToCopyParsable: selectedGdriveItemProperty[selctedGdriveItemKey],
 			copyDestinationFolder: JSON.stringify(event.drive.activeCursorItem),
 		});
 
@@ -209,12 +191,22 @@ function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	}
 	return cacheVal;
 }
+function getUserPropertyParsed<TData>(cacheKeyName: TUserPropertyKeys): TData | null{
+	const targetVal = getUserProperty(cacheKeyName);
+
+	if(!targetVal || getIsParsable(targetVal)){
+		return null;
+	}
+
+	return JSON.parse(targetVal);
+}
+
 const request = (() => {
 	class Request {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://eight-mugs-report.loca.lt";
+			this.#origin = "https://honest-lizards-taste.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);

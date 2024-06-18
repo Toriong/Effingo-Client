@@ -141,7 +141,7 @@ const HomeCards = (() => {
 
 		const permissionsAndFolderHeader = CardService.newCardHeader()
 			.setTitle("CLICK A FOLDER OR FILE")
-			.setImageUrl(IMGS.HOME)
+			.setImageUrl(IMGS.TOOLS)
 			.setSubtitle(
 				"Click the folder that you want to copy or update its permissions.",
 			);

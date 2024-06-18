@@ -13,6 +13,7 @@ type TUserPropertiesBoolKeys =
 	| "hasIsOnItemSelectedResultPgBeenSet"
 	| "isChangingTheCopyFolderDestination";
 type TUserPropertiesBoolProperties = Record<TUserPropertiesBoolKeys, boolean>;
+type TClickedGdriveItems = Record<string, ISelectedItem>
 
 interface TUserProperties
 	extends TSelectedItemsProperty,
@@ -21,6 +22,7 @@ interface TUserProperties
 	headerTxtForGdriveSelectedResultsPg: string;
 	selectedFolderToCopyParsable: ISelectedItem | null;
 	copyDestinationFolder: string;
+	clickedGdriveItems: TClickedGdriveItems
 }
 
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
