@@ -210,7 +210,8 @@ const request = (() => {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://brown-colts-sneeze.loca.lt";
+			
+			this.#origin = "https://dirty-bugs-train.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);

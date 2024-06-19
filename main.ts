@@ -21,84 +21,44 @@ function deleteGdriveItemSelection() {
 // -if the user clicks on the root folder, then get the immediate children folders for that folder
 
 function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
-	if (!event.parameters?.selectedFolderToCopyParsable) {
-		return;
-	}
+	// GOAL: when the user selects a google drive folder that is being listed
+	// when the user selects a google drive folder
+	// -display the name of that folder onto the ui 
+	// -that folder will be the copy destination 
+	// -store it into the property service, when the copy folder drive gets render,
+	// -display as the copy folder destination and delete that value from the 
+	// -cache
 
-	const { selectedFolderToCopyParsable } = event.parameters;
+	// GOAL: display all of the root folders to the user
 
-	if (
-		!getIsParsable(selectedFolderToCopyParsable) &&
-		parseToObj<ISelectedItem>(selectedFolderToCopyParsable) === null
-	) {
-		return;
-	}
 
-	const selectedFolderToCopy = parseToObj<ISelectedItem>(
-		event.parameters.selectedFolderToCopyParsable,
-	);
+	
 
-	setUserProperty("isChangingTheCopyFolderDestination", true);
-	setUserProperty("selectedFolderToCopyParsable", selectedFolderToCopy);
+
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
 		"<b>Select the copy destination folder.</b>",
 	);
-
-	const foldersIterator = DriveApp.getFolders();
-	const folders: {
-		name: string;
-		id: string;
-		description: string | null;
-		parentFolderIds: string[];
-	}[] = [];
-
-	while (foldersIterator.hasNext()) {
-		const folder = foldersIterator.next();
-		const parentFolderIterator = folder.getParents();
-		const parentFolderIds: string[] = [];
-
-		while (parentFolderIterator.hasNext()) {
-			parentFolderIds.push(parentFolderIterator.next().getId());
-		}
-
-		folders.push({
-			name: folder.getName(),
-			id: folder.getId(),
-			description: folder.getDescription(),
-			parentFolderIds,
-		});
-	}
-
-	request.post({ map: JSON.stringify(folders) });
-	// when the user clicks on the View Children Button, have the following to occur:
-	// -get the children for that specific folder
-	// -test how the ui will be displayed
-	const action = CardService.newAction().setFunctionName("handleOnClick");
-	const testFolderASectionTitle =
-		CardService.newTextParagraph().setText("Folder A");
-	const testFolderAViewChildrenBtn = CardService.newTextButton()
-		.setText("View Children")
-		.setBackgroundColor(COLORS.SMOKEY_GREY)
-		.setOnClickAction(action);
-	const testFolderASelectedFolderBtn = CardService.newTextButton()
-		.setText("Select Folder")
-		.setOnClickAction(action);
-	const testFolderBSectionTitle =
-		CardService.newTextParagraph().setText("Folder A");
-	const testFolderBViewChildrenBtn = CardService.newTextButton()
-		.setText("View Children")
-		.setBackgroundColor(COLORS.SMOKEY_GREY)
-		.setOnClickAction(action);
-	const testFolderBSelectedFolderBtn = CardService.newTextButton()
-		.setText("Select Folder")
-		.setOnClickAction(action);
+	const folder1Example = CardService.newTextParagraph().setText(
+		"Folder 1",
+	);
+	const action = CardService.newAction().setFunctionName("handleOnClick")
+	const folder1ExampleSelectBtn = CardService.newTextButton().setText(
+		"Select",
+	).setOnClickAction(action);
+	const folder2ExampleChildrenFolders = CardService.newTextButton().setText(
+		"View Children",
+	).setOnClickAction(action);
 	const headerSection =
 		CardService.newCardSection().addWidget(headerTxtParagraph);
-	const testCardSection1 = CardService.newCardSection();
-	const testCardSection2 = CardService.newCardSection();
+	const cardSection =
+		CardService.newCardSection()
+			.addWidget(folder1Example)
+			.addWidget(folder1ExampleSelectBtn)
+			.addWidget(folder2ExampleChildrenFolders);
 	const card = CardService.newCardBuilder()
 		.setName("selectCopyFolderDestination")
-		.addSection(headerSection);
+		.addSection(headerSection)
+		.addSection(cardSection)
 	const nav = CardService.newNavigation().pushCard(card.build());
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);

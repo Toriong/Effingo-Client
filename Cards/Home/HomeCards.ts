@@ -147,7 +147,7 @@ const HomeCards = (() => {
 			);
 		const permissionsCardHeaderTxt = CardService.newDecoratedText()
 			.setText(
-				"See what permissions that users have for your folders and files.",
+				"See what permissions that users have for ALL of your folders and files.",
 			)
 			.setWrapText(true);
 		const featureWarningTxt =
