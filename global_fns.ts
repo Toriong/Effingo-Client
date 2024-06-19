@@ -67,64 +67,33 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	request.post({ map: JSON.stringify(event) });
+	request.post({ map: "yo there!" });
 
-	// MAIN GOAL: the user has selcted the following for copying a folder:
-	// -copy just the folders
-	// -copy the same permissions
-
-	// CASE: the user selects a folder to copy
-	// MAIN GOAL: store the id of the folder into the user property service as the key
-	// the following is stored in the user property service:
-	// { [the folder id]: { folder name, options: { willCopyFoldersOnly: bool, willCopySamePermissions: bool }, mimeType, and the rest of the interface  } }
-
-	// use 'clickedGdriveItems' property to get the target gdrive item that was select via its id
-
-	// using the id of the select gdrive item, get the target gdrive
-
-	const selectedGdriveItemProperty = getUserPropertyParsed<TClickedGdriveItems>(
-		"selectedGdriveItems",
+	const copyFolderDestinations = getUserPropertyParsed<TCopyDestinationFolders>(
+		"copyDestinationFoldersParsable",
 	);
-	const isChangingTheCopyFolderDestinationStr = getUserProperty(
-		"isChangingTheCopyFolderDestination",
-	);
+	let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
 
-	const isChangingTheCopyFolderDestination =
-		isChangingTheCopyFolderDestinationStr &&
-		getIsParsable(isChangingTheCopyFolderDestinationStr)
-			? JSON.parse(isChangingTheCopyFolderDestinationStr)
-			: null;
+	if (
+		copyFolderDestinations &&
+		event.drive.activeCursorItem?.id &&
+		copyFolderDestinations[event.drive.activeCursorItem.id]
+	) {
+		copyFolderDestinationName =
+			copyFolderDestinations[event.drive.activeCursorItem.id]
+				.copyDestinationFolderName;
+	}
+
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
 	if (!event.parameters) {
 		event.parameters = {};
 	}
 
-	const selctedGdriveItemKey = event.drive?.activeCursorItem?.id ?? "";
-
-	if (
-		isChangingTheCopyFolderDestination !== null &&
-		isChangingTheCopyFolderDestination &&
-		selectedGdriveItemProperty?.[selctedGdriveItemKey]
-	) {
-		Object.assign(event.parameters, {
-			hasIsOnItemSelectedResultPgBeenSet: true,
-			headerTxt: JSON.parse(headerTxt as string),
-			selectedFolderToCopyParsable:
-				selectedGdriveItemProperty[selctedGdriveItemKey],
-			copyDestinationFolder: JSON.stringify(event.drive.activeCursorItem),
-		});
-
-		setUserProperty("isChangingTheCopyFolderDestination", false);
-		setUserProperty("selectedFolderToCopyParsable", null);
-
-		return renderCopyFolderCardPg(event);
-	}
-
 	Object.assign(event.parameters, {
-		hasIsOnItemSelectedResultPgBeenSet: true,
 		headerTxt: JSON.parse(headerTxt as string),
 		selectedFolderToCopyParsable: JSON.stringify(event.drive.activeCursorItem),
+		copyDestinationFolder: copyFolderDestinationName,
 	});
 
 	return renderCopyFolderCardPg(event);
@@ -210,8 +179,7 @@ const request = (() => {
 		#origin: string;
 
 		constructor() {
-			
-			this.#origin = "https://dirty-bugs-train.loca.lt";
+			this.#origin = "https://curly-cats-sleep.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);

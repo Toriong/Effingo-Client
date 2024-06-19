@@ -13,7 +13,11 @@ type TUserPropertiesBoolKeys =
 	| "hasIsOnItemSelectedResultPgBeenSet"
 	| "isChangingTheCopyFolderDestination";
 type TUserPropertiesBoolProperties = Record<TUserPropertiesBoolKeys, boolean>;
-type TClickedGdriveItems = Record<string, ISelectedItem>
+interface ICopyDestinationFolder {
+	copyDestinationFolderId: string;
+	copyDestinationFolderName: string;
+}
+type TCopyDestinationFolders = Record<string, ICopyDestinationFolder>;
 
 interface TUserProperties
 	extends TSelectedItemsProperty,
@@ -21,8 +25,7 @@ interface TUserProperties
 	itemSelectedResultPgHeaderTxt: string;
 	headerTxtForGdriveSelectedResultsPg: string;
 	selectedFolderToCopyParsable: ISelectedItem | null;
-	copyDestinationFolder: string;
-	clickedGdriveItems: TClickedGdriveItems
+	copyDestinationFoldersParsable: string;
 }
 
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
@@ -57,8 +60,10 @@ interface IDrive {
 type TParameterKeys =
 	| "headerTxt"
 	| "gdriveItemNamesParsable"
+	| "copyDestinationFolderName"
 	| "hasIsOnItemSelectedResultPgBeenSet"
-	| TUserPropertyKeys;
+	| TUserPropertyKeys
+	| keyof ICopyDestinationFolder;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	clientPlatform: string;
 	commonEventObject: ICommonEventObject;
