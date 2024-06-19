@@ -67,20 +67,17 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	request.post({ map: "yo there!" });
-
-	const copyFolderDestinations = getUserPropertyParsed<TCopyDestinationFolders>(
-		"copyDestinationFoldersParsable",
-	);
+	const copyFoldersInfo =
+		getUserPropertyParsed<TFolderToCopyInfo>("folderToCopyInfo");
 	let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
 
 	if (
-		copyFolderDestinations &&
+		copyFoldersInfo &&
 		event.drive.activeCursorItem?.id &&
-		copyFolderDestinations[event.drive.activeCursorItem.id]
+		copyFoldersInfo[event.drive.activeCursorItem.id]
 	) {
 		copyFolderDestinationName =
-			copyFolderDestinations[event.drive.activeCursorItem.id]
+			copyFoldersInfo[event.drive.activeCursorItem.id]
 				.copyDestinationFolderName;
 	}
 

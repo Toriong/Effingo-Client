@@ -150,7 +150,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const {
 		selectedFolderToCopyParsable,
 		copyDestinationFolderName,
-		...paramsRest
+		isResetting,
 	} = event.parameters;
 
 	if (!selectedFolderToCopyParsable) {
@@ -186,6 +186,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		.setFunctionName("renderCopyFolderCardPg")
 		.setParameters({
 			selectedFolderToCopyParsable: selectedFolderToCopyParsable,
+			isResetting: "true",
 		});
 	const copyFolderDestinationBtnAction = CardService.newAction()
 		.setFunctionName("handleChangeCopyDestinationFolderBtnClick")

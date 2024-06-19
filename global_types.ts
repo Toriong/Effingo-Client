@@ -15,16 +15,20 @@ type TUserPropertiesBoolProperties = Record<TUserPropertiesBoolKeys, boolean>;
 interface ICopyDestinationFolder {
 	copyDestinationFolderId: string;
 	copyDestinationFolderName: string;
+	willCopyStructureOnly: boolean;
+	willCopyPermissions: boolean;
 }
-type TCopyDestinationFolders = Record<string, ICopyDestinationFolder>;
+type TFolderToCopyInfo = Record<string, ICopyDestinationFolder>;
 
+/** Used the property service object of google app script. */
 interface TUserProperties
 	extends TSelectedItemsProperty,
 		TUserPropertiesBoolProperties {
 	itemSelectedResultPgHeaderTxt: string;
 	headerTxtForGdriveSelectedResultsPg: string;
 	selectedFolderToCopyParsable: ISelectedItem | null;
-	copyDestinationFoldersParsable: string;
+	/** The string can be parse into TFolderToCopyInfo. */
+	folderToCopyInfo: string;
 }
 
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
