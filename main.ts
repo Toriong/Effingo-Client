@@ -20,7 +20,7 @@ function deleteGdriveItemSelection() {
 // -get all of the root folders
 // -if the user clicks on the root folder, then get the immediate children folders for that folder
 
-function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
+function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
 	if (!event.parameters?.selectedFolderToCopyParsable) {
 		return;
 	}
@@ -43,6 +43,33 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
 		"<b>Select the copy destination folder.</b>",
 	);
+
+	const foldersIterator = DriveApp.getFolders();
+	const folders: {
+		name: string;
+		id: string;
+		description: string | null;
+		parentFolderIds: string[];
+	}[] = [];
+
+	while (foldersIterator.hasNext()) {
+		const folder = foldersIterator.next();
+		const parentFolderIterator = folder.getParents();
+		const parentFolderIds: string[] = [];
+
+		while (parentFolderIterator.hasNext()) {
+			parentFolderIds.push(parentFolderIterator.next().getId());
+		}
+
+		folders.push({
+			name: folder.getName(),
+			id: folder.getId(),
+			description: folder.getDescription(),
+			parentFolderIds,
+		});
+	}
+
+	request.post({ map: JSON.stringify(folders) });
 	// when the user clicks on the View Children Button, have the following to occur:
 	// -get the children for that specific folder
 	// -test how the ui will be displayed
@@ -69,39 +96,14 @@ function handleChangeCopyDestinationFolderBtn(event: IGScriptAppEvent) {
 		CardService.newCardSection().addWidget(headerTxtParagraph);
 	const testCardSection1 = CardService.newCardSection();
 	const testCardSection2 = CardService.newCardSection();
-
-	testCardSection1.addWidget(testFolderASectionTitle);
-
-	testCardSection1.addWidget(testFolderAViewChildrenBtn);
-
-	testCardSection1.addWidget(testFolderASelectedFolderBtn);
-
-	testCardSection2.addWidget(testFolderBSectionTitle);
-
-	testCardSection2.addWidget(testFolderBViewChildrenBtn);
-
-	testCardSection2.addWidget(testFolderBSelectedFolderBtn);
-
-	// folder:
-	// view children
-	// select folder
-	// each folder will be a section
-	const footer = CardService.newFixedFooter().setPrimaryButton(
-		CardService.newTextButton()
-			.setText("Back To Selected Folder.")
-			.setOnClickAction(action),
-	);
 	const card = CardService.newCardBuilder()
 		.setName("selectCopyFolderDestination")
-		.addSection(headerSection)
-		.addSection(testCardSection1)
-		.addSection(testCardSection2)
-		.setFixedFooter(footer);
+		.addSection(headerSection);
 	const nav = CardService.newNavigation().pushCard(card.build());
 	const actionResponse =
 		CardService.newActionResponseBuilder().setNavigation(nav);
 
-	return card.build();
+	return actionResponse.build();
 }
 
 function renderCopyFolderCardPg(event: IGScriptAppEvent) {
@@ -111,10 +113,8 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		return;
 	}
 
-	const {
-		selectedFolderToCopyParsable,
-		copyDestinationFolder,
-	} = event.parameters;
+	const { selectedFolderToCopyParsable, copyDestinationFolder } =
+		event.parameters;
 
 	const selectedFolder: ISelectedItem =
 		selectedFolderToCopyParsable && getIsParsable(selectedFolderToCopyParsable)
@@ -141,18 +141,18 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const cardServiceOptionsTxtSec =
 		CardService.newCardSection().addWidget(copyFolderOpt);
 	const copyFolderAction = CardService.newAction()
-		.setFunctionName("handleChangeCopyDestinationFolderBtn")
+		.setFunctionName("handleChangeCopyDestinationFolderBtnClick")
 		.setParameters({
 			selectedFolderToCopyParsable: JSON.stringify(selectedFolder),
 		});
 	const copyFolderDestinationBtn = CardService.newTextButton()
 		.setText("Change Copy Folder Destination.")
 		.setBackgroundColor(COLORS.SMOKEY_GREY)
-		.setOnClickAction(copyFolderAction) 
+		.setOnClickAction(copyFolderAction);
 
-	cardServiceOptionsTxtSec.addWidget(copyDestinationFolderTxtWidget)
+	cardServiceOptionsTxtSec.addWidget(copyDestinationFolderTxtWidget);
 
-	cardServiceOptionsTxtSec.addWidget(copyFolderDestinationBtn)
+	cardServiceOptionsTxtSec.addWidget(copyFolderDestinationBtn);
 
 	const willCopyFoldersOnly = false;
 	const willIncludesTheSamePermissions = false;

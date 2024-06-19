@@ -73,24 +73,25 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 	// -copy just the folders
 	// -copy the same permissions
 
-	// CASE: the user selects a folder to copy 
-	// MAIN GOAL: store the id of the folder into the user property service as the key 
-	// the following is stored in the user property service: 
+	// CASE: the user selects a folder to copy
+	// MAIN GOAL: store the id of the folder into the user property service as the key
+	// the following is stored in the user property service:
 	// { [the folder id]: { folder name, options: { willCopyFoldersOnly: bool, willCopySamePermissions: bool }, mimeType, and the rest of the interface  } }
-	
+
 	// use 'clickedGdriveItems' property to get the target gdrive item that was select via its id
-	
+
 	// using the id of the select gdrive item, get the target gdrive
 
-
-	const selectedGdriveItemProperty = getUserPropertyParsed<TClickedGdriveItems>("selectedGdriveItems")
+	const selectedGdriveItemProperty = getUserPropertyParsed<TClickedGdriveItems>(
+		"selectedGdriveItems",
+	);
 	const isChangingTheCopyFolderDestinationStr = getUserProperty(
 		"isChangingTheCopyFolderDestination",
 	);
 
 	const isChangingTheCopyFolderDestination =
-		(isChangingTheCopyFolderDestinationStr &&
-		getIsParsable(isChangingTheCopyFolderDestinationStr))
+		isChangingTheCopyFolderDestinationStr &&
+		getIsParsable(isChangingTheCopyFolderDestinationStr)
 			? JSON.parse(isChangingTheCopyFolderDestinationStr)
 			: null;
 	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
@@ -99,7 +100,7 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		event.parameters = {};
 	}
 
-	let selctedGdriveItemKey = event.drive?.activeCursorItem?.id ?? "";
+	const selctedGdriveItemKey = event.drive?.activeCursorItem?.id ?? "";
 
 	if (
 		isChangingTheCopyFolderDestination !== null &&
@@ -109,7 +110,8 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
 		Object.assign(event.parameters, {
 			hasIsOnItemSelectedResultPgBeenSet: true,
 			headerTxt: JSON.parse(headerTxt as string),
-			selectedFolderToCopyParsable: selectedGdriveItemProperty[selctedGdriveItemKey],
+			selectedFolderToCopyParsable:
+				selectedGdriveItemProperty[selctedGdriveItemKey],
 			copyDestinationFolder: JSON.stringify(event.drive.activeCursorItem),
 		});
 
@@ -191,10 +193,12 @@ function getUserProperty(cacheKeyName: TUserPropertyKeys) {
 	}
 	return cacheVal;
 }
-function getUserPropertyParsed<TData>(cacheKeyName: TUserPropertyKeys): TData | null{
+function getUserPropertyParsed<TData>(
+	cacheKeyName: TUserPropertyKeys,
+): TData | null {
 	const targetVal = getUserProperty(cacheKeyName);
 
-	if(!targetVal || getIsParsable(targetVal)){
+	if (!targetVal || getIsParsable(targetVal)) {
 		return null;
 	}
 
@@ -206,7 +210,7 @@ const request = (() => {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://honest-lizards-taste.loca.lt";
+			this.#origin = "https://brown-colts-sneeze.loca.lt";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);
