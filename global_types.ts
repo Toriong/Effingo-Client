@@ -1,7 +1,6 @@
 type TImageStyle =
 	| typeof CardService.ImageStyle.CIRCLE
 	| typeof CardService.ImageStyle.SQUARE;
-type TParameters = { [key: string]: string };
 type TCardPgs = "home" | "folderCopyOptions" | "selectedFoldersToCopy";
 type TSelectedGdriveItemsKeyNames = "selectedFolders" | "selectedGdriveItems";
 type TSelectedItemsProperty = Record<
@@ -62,13 +61,15 @@ type TParameterKeys =
 	| "gdriveItemNamesParsable"
 	| "copyDestinationFolderName"
 	| "hasIsOnItemSelectedResultPgBeenSet"
+	| "isResetting"
 	| TUserPropertyKeys
 	| keyof ICopyDestinationFolder;
+type TParameters = Partial<{ [key in TParameterKeys]: string }>;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
 	clientPlatform: string;
 	commonEventObject: ICommonEventObject;
 	userTimezone: ITimeZone;
 	userCountry: string;
 	drive: IDrive;
-	parameters?: Partial<{ [key in TParameterKeys]: string }>;
+	parameters?: TParameters;
 }

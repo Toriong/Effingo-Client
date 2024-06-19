@@ -77,6 +77,8 @@ function handleSelectFolderForCopyDestinationBtnClick(event: IGScriptAppEvent) {
 		return;
 	}
 
+	// GOAL: set the user property service with the new value
+
 	Object.assign(event.parameters, {
 		selectedFolderToCopyParsable,
 		copyDestinationFolderName: event.parameters.copyDestinationFolderName,
@@ -86,12 +88,12 @@ function handleSelectFolderForCopyDestinationBtnClick(event: IGScriptAppEvent) {
 }
 
 function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
-	request.post({
-		map: JSON.stringify({
-			fn: "handleChangeCopyDestinationFolderBtnClick",
-			yo: event,
-		}),
-	});
+	// request.post({
+	// 	map: JSON.stringify({
+	// 		fn: "handleChangeCopyDestinationFolderBtnClick",
+	// 		yo: event,
+	// 	}),
+	// });
 	// make a request to the server to get the root folders of the user's drive.
 
 	if (
@@ -145,8 +147,11 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 		return;
 	}
 
-	const { selectedFolderToCopyParsable, copyDestinationFolderName } =
-		event.parameters;
+	const {
+		selectedFolderToCopyParsable,
+		copyDestinationFolderName,
+		...paramsRest
+	} = event.parameters;
 
 	if (!selectedFolderToCopyParsable) {
 		return;
@@ -177,7 +182,12 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	);
 	const cardServiceOptionsTxtSec =
 		CardService.newCardSection().addWidget(copyFolderOpt);
-	const copyFolderAction = CardService.newAction()
+	const resetCopyFolderDestinationBtnAction = CardService.newAction()
+		.setFunctionName("renderCopyFolderCardPg")
+		.setParameters({
+			selectedFolderToCopyParsable: selectedFolderToCopyParsable,
+		});
+	const copyFolderDestinationBtnAction = CardService.newAction()
 		.setFunctionName("handleChangeCopyDestinationFolderBtnClick")
 		.setParameters({
 			selectedFolderToCopyParsable: selectedFolderToCopyParsable,
@@ -185,11 +195,17 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const copyFolderDestinationBtn = CardService.newTextButton()
 		.setText("Change Copy Folder Destination.")
 		.setBackgroundColor(COLORS.SMOKEY_GREY)
-		.setOnClickAction(copyFolderAction);
+		.setOnClickAction(copyFolderDestinationBtnAction);
+	const resetCopyFolderDestinationBtn = CardService.newTextButton()
+		.setText("Reset Copy Folder Destination.")
+		.setBackgroundColor(COLORS.WARNING_ORANGE)
+		.setOnClickAction(resetCopyFolderDestinationBtnAction);
 
 	cardServiceOptionsTxtSec.addWidget(copyDestinationFolderTxtWidget);
 
 	cardServiceOptionsTxtSec.addWidget(copyFolderDestinationBtn);
+
+	cardServiceOptionsTxtSec.addWidget(resetCopyFolderDestinationBtn);
 
 	const willCopyFoldersOnly = false;
 	const willIncludesTheSamePermissions = false;

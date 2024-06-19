@@ -54,10 +54,12 @@ const IMGS = (() => {
 const COLORS = (() => {
 	const ACTION_BTN_COLOR = "#7AC4FB";
 	const SMOKEY_GREY = "#F0F0F0";
+	const WARNING_ORANGE = "#FFC107";
 
 	return {
 		ACTION_BTN_COLOR,
 		SMOKEY_GREY,
+		WARNING_ORANGE,
 	};
 })();
 const CARDSERVICE_VARS = (() => {
