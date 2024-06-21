@@ -115,27 +115,6 @@ function getIsBool(boolStr: string) {
 	}
 }
 
-function setIsUserOnItemSelectedResultsPgOnClick(event: IGScriptAppEvent) {
-	const isOnItemSelectedResultPg = event.parameters?.isOnItemSelectedResultPg;
-
-	if (
-		!isOnItemSelectedResultPg ||
-		(!isOnItemSelectedResultPg &&
-			typeof (isOnItemSelectedResultPg !== "string")) ||
-		(typeof isOnItemSelectedResultPg === "string" &&
-			!getIsBool(isOnItemSelectedResultPg))
-	) {
-		return;
-	}
-
-	const userProperties = PropertiesService.getUserProperties();
-	const currentUserCardPg: {
-		[key in TSelectedUserPropertyKey<"isOnItemSelectedResultPg">]: string;
-	} = { isOnItemSelectedResultPg: isOnItemSelectedResultPg };
-
-	userProperties.setProperties(currentUserCardPg);
-}
-
 function setUserProperty<
 	TDataA extends TUserPropertyKeys,
 	TDataB extends TDynamicCacheVal<TDataA>,
@@ -171,18 +150,40 @@ function getUserPropertyParsed<TData>(
 	return JSON.parse(targetVal);
 }
 
+
 const request = (() => {
 	class Request {
 		#origin: string;
 
 		constructor() {
-			this.#origin = "https://curly-cats-sleep.loca.lt";
+			this.#origin = "https://040e2685968955c1706a538cd6042dc7.serveo.net";
 		}
 		get(path = "") {
 			UrlFetchApp.fetch(`${this.#origin}/${path}`);
 		}
-		post(payload: { [key: string]: string }, path = "") {
-			UrlFetchApp.fetch(`${this.#origin}/${path}`, { payload });
+		// throw a compiler error if the string start with "/"
+		post(payload: { [key: string]: string }, path: string) {
+			try {
+				const response = UrlFetchApp.fetch(`${this.#origin}/${path}`, {
+					method: "post",
+					payload,
+				});
+				const responseCode = response.getResponseCode();
+
+				if (responseCode !== 200) {
+					throw new Error(
+						`Recieved a error ${responseCode} response from the server.`,
+					);
+				}
+
+				return response.getContentText();
+			} catch (error) {
+				const failedToSendPostReq = `Something went wrong. Application code error: ${error}`;
+
+				console.error(failedToSendPostReq);
+
+				return null;
+			}
 		}
 	}
 

@@ -45,39 +45,17 @@ function handleOnClick(event: IGScriptAppEvent) {
 // -get all of the root folders
 // -if the user clicks on the root folder, then get the immediate children folders for that folder
 function handleSelectFolderForCopyDestinationBtnClick(event: IGScriptAppEvent) {
-	// GOAL: when the user clicks on 'select' button, change the copy destination of the folder to the
-	// -selected folder
-	// the copy destination folder has been changed to the selected folder
-	// store it into copyFolderDestinationName, have the default value be '{current selected folder name} COPY
-	// once y is received, get the name
-	// using the id of selectedFolderToCopyParsable, query copyDestinationFolders to get its corresponding copy folder destination object, call it y
-	// query the object 'copyDestinationFolders' from the user property service
-	// within the 'renderCopyFolderCardPg' function, get the id of the selectedFolderToCopyParsable after it has been parsed
-	// call the rendered function for the selected copy folder ui with the select folder passed in as the argument for 'selectedFolderToCopyParsable'
-	// store the below object into the UserProperty service object
-	// set its value to the following: { copyDestinationFolderId, copyDestinationFolderName }
-	// call the below object copyFolderDestinationForCurrentSelectedFolder
-	// the object of copyDestinationFolders will have the following form: { folder id: { id of the foleder to copy to, the name of the folder } }
-	// get the object that contains the copy destination folder for each selected folder from the userPropertyService object by quering by 'copyDestinationFolders'
-	// get the id from the object stored in activeFolder field
-	// get the currently selected folder via the 'activeFolder' field from the UserPropertyService object
-	// within the 'handleSelectFolderForCopyDestinationBtnClick' function, do the above
-	// the user selects the copy destination folder
-
-	// request.post({ map: JSON.stringify(event) });
-
 	if (!event?.parameters?.copyDestinationFolderName) {
 		return;
 	}
 
-	const selectedFolderToCopyParsable =
-		event.parameters.selectedFolderToCopyParsable;
+	const selectedFolderToCopyParsable = event.parameters.selectedFolderToCopyParsable;
 
 	if (!selectedFolderToCopyParsable) {
 		return;
 	}
 
-	// GOAL: set the user property service with the new value
+	// GOAL: update the user property with the new copy folder destination 
 
 	Object.assign(event.parameters, {
 		selectedFolderToCopyParsable,
@@ -87,14 +65,35 @@ function handleSelectFolderForCopyDestinationBtnClick(event: IGScriptAppEvent) {
 	return renderCopyFolderCardPg(event);
 }
 
+function getGdriveItems<TData>(parentFolderId = "root") {
+	try {
+		const token = ScriptApp.getOAuthToken();
+		const responseBody = request.post(
+			{
+				parent_folder_id: parentFolderId,
+				gdrive_access_token: token,
+				gdrive_item_type: "application/vnd.google-apps.folder",
+			},
+			"get-gdrive-items",
+		);
+
+		if(!responseBody){
+			throw new Error("Failed to get the gdrive items of the target folder.")
+		}
+		
+		const gdriveItems = JSON.parse(responseBody);
+		
+		return gdriveItems as TData;
+	} catch (error) {
+		const errMsg = `Failed to get target gdrive items. Reason: ${error}`;
+
+		return { errMsg };
+	}
+}
+
 function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
-	// request.post({
-	// 	map: JSON.stringify({
-	// 		fn: "handleChangeCopyDestinationFolderBtnClick",
-	// 		yo: event,
-	// 	}),
-	// });
 	// make a request to the server to get the root folders of the user's drive.
+	// send the post request to get the root folders of the user's drive
 
 	if (
 		!event.parameters?.selectedFolderToCopyParsable ||
@@ -150,7 +149,6 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const {
 		selectedFolderToCopyParsable,
 		copyDestinationFolderName,
-		isResetting,
 	} = event.parameters;
 
 	if (!selectedFolderToCopyParsable) {
@@ -172,8 +170,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
 	const selectedFolderToCopyTxtWidget = CardService.newTextParagraph().setText(
 		`<b>Selected Folder</b>: <i>${selectedFolder.title}</i>`,
 	);
-	const copyDestinationFolderTxt =
-		copyDestinationFolderName ?? `My Drive/${selectedFolder.title} COPY`;
+	const copyDestinationFolderTxt = copyDestinationFolderName ?? `My Drive/${selectedFolder.title} COPY`;
 	const copyDestinationFolderTxtWidget = CardService.newTextParagraph().setText(
 		`Copy Folder Destination: <i>${copyDestinationFolderTxt}</i>`,
 	);
