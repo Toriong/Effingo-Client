@@ -2,190 +2,189 @@
 function handleCopyFolderStructureBtn() {}
 
 function parseToObj<TData extends object>(stringifiedObj: string): TData {
-	return JSON.parse(stringifiedObj);
+  return JSON.parse(stringifiedObj);
 }
 
 function handleFolderItemsCopy() {
-	const { SQUARE } = CARDSERVICE_VARS;
-	const { createHeader } = CardServices;
-	const folderCopyCardHeader = createHeader(
-		"Folder Copy",
-		IMGS.COPY_ICON,
-		"folder_copy_icon",
-		SQUARE,
-		"yo thereeee!.",
-	);
-	const card = CardService.newCardBuilder()
-		.setHeader(folderCopyCardHeader)
-		.build();
-	const newNavigationStack = CardService.newNavigation().pushCard(card);
+  const { SQUARE } = CARDSERVICE_VARS;
+  const { createHeader } = CardServices;
+  const folderCopyCardHeader = createHeader(
+    "Folder Copy",
+    IMGS.COPY_ICON,
+    "folder_copy_icon",
+    SQUARE,
+    "yo thereeee!."
+  );
+  const card = CardService.newCardBuilder()
+    .setHeader(folderCopyCardHeader)
+    .build();
+  const newNavigationStack = CardService.newNavigation().pushCard(card);
 
-	return newNavigationStack;
+  return newNavigationStack;
 }
 
 function displayFolderCards() {
-	const { createHeader } = CardServices;
-	const copyFolderStructureHeader = createHeader(
-		"Structure copy",
-		IMGS.ICON_FOLDER_STRUCTURE,
-		"copy_folder_structure_icon",
-		CardService.ImageStyle.SQUARE,
-		"Copy only the folder's sub folders.",
-	);
-	const copyFolderStructureOptCard = CardService.newCardBuilder()
-		.setHeader(copyFolderStructureHeader)
-		.build();
-	const deepCopyHeader = createHeader(
-		"Deep Copy",
-		IMGS.ICON_COPY_FOLDER_OPT,
-		"deep_copy_icon",
-		CardService.ImageStyle.SQUARE,
-		"Copy folders and their contents.",
-	);
-	const deepCopyCard = CardService.newCardBuilder()
-		.setHeader(deepCopyHeader)
-		.build();
-	const navigation = CardService.newNavigation()
-		.pushCard(copyFolderStructureOptCard)
-		.pushCard(deepCopyCard);
+  const { createHeader } = CardServices;
+  const copyFolderStructureHeader = createHeader(
+    "Structure copy",
+    IMGS.ICON_FOLDER_STRUCTURE,
+    "copy_folder_structure_icon",
+    CardService.ImageStyle.SQUARE,
+    "Copy only the folder's sub folders."
+  );
+  const copyFolderStructureOptCard = CardService.newCardBuilder()
+    .setHeader(copyFolderStructureHeader)
+    .build();
+  const deepCopyHeader = createHeader(
+    "Deep Copy",
+    IMGS.ICON_COPY_FOLDER_OPT,
+    "deep_copy_icon",
+    CardService.ImageStyle.SQUARE,
+    "Copy folders and their contents."
+  );
+  const deepCopyCard = CardService.newCardBuilder()
+    .setHeader(deepCopyHeader)
+    .build();
+  const navigation = CardService.newNavigation()
+    .pushCard(copyFolderStructureOptCard)
+    .pushCard(deepCopyCard);
 
-	const actionResponse = CardService.newActionResponseBuilder()
-		.setNavigation(navigation)
-		.build();
+  const actionResponse = CardService.newActionResponseBuilder()
+    .setNavigation(navigation)
+    .build();
 
-	return actionResponse;
+  return actionResponse;
 }
 
 function getIsParsable<TData extends string>(val: TData) {
-	try {
-		JSON.parse(val);
+  try {
+    JSON.parse(val);
 
-		return true;
-	} catch (error) {
-		console.error("Not parsable. Reason: ", error);
-	}
+    return true;
+  } catch (error) {
+    console.error("Not parsable. Reason: ", error);
+  }
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-	const copyFoldersInfo =
-		getUserPropertyParsed<TFolderToCopyInfo>("folderToCopyInfo");
-	let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
+  const copyFoldersInfo =
+    getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
+  let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
 
-	if (
-		copyFoldersInfo &&
-		event.drive.activeCursorItem?.id &&
-		copyFoldersInfo[event.drive.activeCursorItem.id]
-	) {
-		copyFolderDestinationName =
-			copyFoldersInfo[event.drive.activeCursorItem.id]
-				.copyDestinationFolderName;
-	}
+  if (
+    copyFoldersInfo &&
+    event.drive.activeCursorItem?.id &&
+    copyFoldersInfo[event.drive.activeCursorItem.id]
+  ) {
+    copyFolderDestinationName =
+      copyFoldersInfo[event.drive.activeCursorItem.id]
+        .copyDestinationFolderName;
+  }
 
-	const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
+  const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
-	if (!event.parameters) {
-		event.parameters = {};
-	}
+  if (!event.parameters) {
+    event.parameters = {};
+  }
 
-	Object.assign(event.parameters, {
-		headerTxt: JSON.parse(headerTxt as string),
-		selectedFolderToCopyParsable: JSON.stringify(event.drive.activeCursorItem),
-		copyDestinationFolder: copyFolderDestinationName,
-	});
+  Object.assign(event.parameters, {
+    headerTxt: JSON.parse(headerTxt as string),
+    selectedFolderToCopyParsable: JSON.stringify(event.drive.activeCursorItem),
+    copyDestinationFolder: copyFolderDestinationName,
+  });
 
-	return renderCopyFolderCardPg(event);
+  return renderCopyFolderCardPg(event);
 }
 
 function setIsUserOnItemSelectedResultsPg(isOnItemSelectedResultPg: boolean) {
-	const userProperties = PropertiesService.getUserProperties();
-	const currentUserCardPg: {
-		[key in TSelectedUserPropertyKey<"isOnItemSelectedResultPg">]: string;
-	} = { isOnItemSelectedResultPg: JSON.stringify(isOnItemSelectedResultPg) };
+  const userProperties = PropertiesService.getUserProperties();
+  const currentUserCardPg: {
+    [key in TSelectedUserPropertyKey<"isOnItemSelectedResultPg">]: string;
+  } = { isOnItemSelectedResultPg: JSON.stringify(isOnItemSelectedResultPg) };
 
-	userProperties.setProperties(currentUserCardPg);
+  userProperties.setProperties(currentUserCardPg);
 }
 
 function getIsBool(boolStr: string) {
-	try {
-		JSON.parse(boolStr);
+  try {
+    JSON.parse(boolStr);
 
-		return true;
-	} catch (error) {
-		return false;
-	}
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 function setUserProperty<
-	TDataA extends TUserPropertyKeys,
-	TDataB extends TDynamicCacheVal<TDataA>,
+  TDataA extends TUserPropertyKeys,
+  TDataB extends TDynamicCacheVal<TDataA>
 >(keyName: TDataA, val: TDataB) {
-	const userProperties = PropertiesService.getUserProperties();
-	userProperties.setProperty(keyName, JSON.stringify(val));
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty(keyName, JSON.stringify(val));
 }
 
 function resetUserProperties() {
-	const userProperties = PropertiesService.getUserProperties();
+  const userProperties = PropertiesService.getUserProperties();
 
-	userProperties.deleteAllProperties();
+  userProperties.deleteAllProperties();
 }
 
 function getUserProperty(cacheKeyName: TUserPropertyKeys) {
-	const userProperties = PropertiesService.getUserProperties();
-	const cacheVal = userProperties.getProperty(cacheKeyName);
+  const userProperties = PropertiesService.getUserProperties();
+  const cacheVal = userProperties.getProperty(cacheKeyName);
 
-	if (!cacheVal) {
-		return null;
-	}
-	return cacheVal;
+  if (!cacheVal) {
+    return null;
+  }
+  return cacheVal;
 }
 function getUserPropertyParsed<TData>(
-	cacheKeyName: TUserPropertyKeys,
+  cacheKeyName: TUserPropertyKeys
 ): TData | null {
-	const targetVal = getUserProperty(cacheKeyName);
+  const targetVal = getUserProperty(cacheKeyName);
 
-	if (!targetVal || getIsParsable(targetVal)) {
-		return null;
-	}
+  if (!targetVal || getIsParsable(targetVal)) {
+    return null;
+  }
 
-	return JSON.parse(targetVal);
+  return JSON.parse(targetVal);
 }
 
-
 const request = (() => {
-	class Request {
-		#origin: string;
+  class Request {
+    #origin: string;
 
-		constructor() {
-			this.#origin = "https://040e2685968955c1706a538cd6042dc7.serveo.net";
-		}
-		get(path = "") {
-			UrlFetchApp.fetch(`${this.#origin}/${path}`);
-		}
-		// throw a compiler error if the string start with "/"
-		post(payload: { [key: string]: string }, path: string) {
-			try {
-				const response = UrlFetchApp.fetch(`${this.#origin}/${path}`, {
-					method: "post",
-					payload,
-				});
-				const responseCode = response.getResponseCode();
+    constructor() {
+      this.#origin = "https://040e2685968955c1706a538cd6042dc7.serveo.net";
+    }
+    get(path = "") {
+      UrlFetchApp.fetch(`${this.#origin}/${path}`);
+    }
+    // throw a compiler error if the string start with "/"
+    post(payload: { [key: string]: string }, path = "") {
+      try {
+        const response = UrlFetchApp.fetch(`${this.#origin}/${path}`, {
+          method: "post",
+          payload,
+        });
+        const responseCode = response.getResponseCode();
 
-				if (responseCode !== 200) {
-					throw new Error(
-						`Recieved a error ${responseCode} response from the server.`,
-					);
-				}
+        if (responseCode !== 200) {
+          throw new Error(
+            `Recieved a error ${responseCode} response from the server.`
+          );
+        }
 
-				return response.getContentText();
-			} catch (error) {
-				const failedToSendPostReq = `Something went wrong. Application code error: ${error}`;
+        return response.getContentText();
+      } catch (error) {
+        const failedToSendPostReq = `Something went wrong. Application code error: ${error}`;
 
-				console.error(failedToSendPostReq);
+        console.error(failedToSendPostReq);
 
-				return null;
-			}
-		}
-	}
+        return null;
+      }
+    }
+  }
 
-	return new Request();
+  return new Request();
 })();
