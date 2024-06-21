@@ -18,6 +18,7 @@ interface ICopyDestinationFolder {
   willCopyStructureOnly: boolean;
   willCopyPermissions: boolean;
 }
+type TGdriveItemTypes = "application/vnd.google-apps.folder";
 type TFoldersToCopyInfo = Record<string, ICopyDestinationFolder>;
 type TGdriveItemsFromServer = {
   id: string;
@@ -71,6 +72,7 @@ type TParameterKeys =
   | "copyDestinationFolderName"
   | "hasIsOnItemSelectedResultPgBeenSet"
   | "isResetting"
+  | "parentFolderId"
   | TUserPropertyKeys
   | keyof ICopyDestinationFolder;
 type TParameters = Partial<{ [key in TParameterKeys]: string }>;

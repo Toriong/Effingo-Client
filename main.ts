@@ -87,14 +87,17 @@ function handleSelectFolderForCopyDestinationBtnClick(event: IGScriptAppEvent) {
   return renderCopyFolderCardPg(event);
 }
 
-function getGdriveItems<TData>(parentFolderId = "root") {
+function getGdriveItems<TData>(
+  parentFolderId = "root",
+  gdriveItemType: TGdriveItemTypes = "application/vnd.google-apps.folder"
+) {
   try {
     const token = ScriptApp.getOAuthToken();
     const responseBodyStringified = request.post(
       {
+        gdrive_item_type: gdriveItemType,
         parent_folder_id: parentFolderId,
         gdrive_access_token: token,
-        gdrive_item_type: "application/vnd.google-apps.folder",
       },
       "get-gdrive-items"
     );
@@ -134,7 +137,7 @@ function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
     CardService.newCardSection().addWidget(headerTxtParagraph);
   const getGdriveItemsResult = getGdriveItems<{
     gdrive_items: TGdriveItemsFromServer[];
-  }>();
+  }>(event.parameters.parentFolderId || "root");
   const card = CardService.newCardBuilder()
     .setName("selectCopyFolderDestination")
     .addSection(headerSection);
@@ -145,7 +148,7 @@ function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
     !getGdriveItemsResult?.data?.gdrive_items?.length
   ) {
     const txt = CardService.newTextParagraph().setText(
-      "No root folders are present."
+      "No folders are present."
     );
     const txtSection = CardService.newCardSection().addWidget(txt);
 
@@ -160,7 +163,14 @@ function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
 
   for (const folder of getGdriveItemsResult?.data?.gdrive_items) {
     const folderName = CardService.newTextParagraph().setText(folder.name);
-    const action = CardService.newAction()
+    const viewChildrenBtnAction = CardService.newAction()
+      .setFunctionName("handleChangeCopyDestinationFolderBtnClick")
+      .setParameters({
+        parentFolderId: folder.id,
+        selectedFolderToCopyParsable:
+          event.parameters.selectedFolderToCopyParsable,
+      });
+    const selectBtnAction = CardService.newAction()
       .setFunctionName("handleSelectFolderForCopyDestinationBtnClick")
       .setParameters({
         copyDestinationFolderId: folder.id,
@@ -171,11 +181,11 @@ function handleChangeCopyDestinationFolderBtnClick(event: IGScriptAppEvent) {
       });
     const selectFolderForCopyDestinationBtn = CardService.newTextButton()
       .setText("Select")
-      .setOnClickAction(action);
+      .setOnClickAction(selectBtnAction);
     const viewFolderChildrenBtn = CardService.newTextButton()
       .setText("View Children")
       .setBackgroundColor(COLORS.SMOKEY_GREY)
-      .setOnClickAction(action);
+      .setOnClickAction(viewChildrenBtnAction);
     const folderCardSection = CardService.newCardSection()
       .addWidget(folderName)
       .addWidget(selectFolderForCopyDestinationBtn)
