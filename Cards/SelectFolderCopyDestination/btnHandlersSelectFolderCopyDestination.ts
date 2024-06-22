@@ -119,6 +119,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     gdriveNextPageToken,
     displayedSelectableFolders: displayedSelectableFoldersStringified,
     selectedFolderToCopyParsable,
+    willUpdateCard,
   } = event.parameters;
   const displayedSelectableFolders = getIsParsable(
     displayedSelectableFoldersStringified
@@ -203,6 +204,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
       selectedFolderToCopyParsable,
       displayedSelectableFolders: JSON.stringify(displayedSelectableFolders),
       gdriveNextPageToken: getGdriveItemsResult.data.gdrive_next_page_token,
+      willUpdateCard: JSON.stringify(true),
     };
     const action = CardService.newAction()
       .setFunctionName("renderSelectCopyFolderDestinationCardPg")
@@ -214,6 +216,18 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     const viewMoreFolderSection =
       CardService.newCardSection().addWidget(viewMoreFoldersBtn);
     card.addSection(viewMoreFolderSection);
+  }
+
+  if (
+    willUpdateCard &&
+    getIsParsable(willUpdateCard) &&
+    JSON.parse(willUpdateCard)
+  ) {
+    const nav = CardService.newNavigation().updateCard(card.build());
+    const actionResponse =
+      CardService.newActionResponseBuilder().setNavigation(nav);
+
+    return actionResponse.build();
   }
 
   const nav = CardService.newNavigation().pushCard(card.build());

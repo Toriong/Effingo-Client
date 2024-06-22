@@ -79,6 +79,7 @@ type TParameterKeys =
   | "parentFolderId"
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
+  | "willUpdateCard"
   | TUserPropertyKeys
   | keyof ICopyDestinationFolder;
 type TParameters = Partial<{ [key in TParameterKeys]: string }>;
