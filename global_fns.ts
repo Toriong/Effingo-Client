@@ -129,6 +129,14 @@ function resetUserProperties() {
   userProperties.deleteAllProperties();
 }
 
+function resetSpecifiedUserProperties(userPropertyKeys: TUserPropertyKeys[]) {
+  const userProperties = PropertiesService.getUserProperties();
+
+  userPropertyKeys.forEach((key) => {
+    userProperties.deleteProperty(key);
+  });
+}
+
 function getUserProperty(cacheKeyName: TUserPropertyKeys) {
   const userProperties = PropertiesService.getUserProperties();
   const cacheVal = userProperties.getProperty(cacheKeyName);

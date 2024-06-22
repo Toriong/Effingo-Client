@@ -73,7 +73,7 @@ type TParameterKeys =
   | "hasIsOnItemSelectedResultPgBeenSet"
   | "isResetting"
   | "parentFolderId"
-  | "currentDisplaySelectableFolders"
+  | "currentDisplayedSelectableFolders"
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
   | TUserPropertyKeys

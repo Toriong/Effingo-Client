@@ -42,7 +42,7 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
       isResetting: "true",
     });
   const copyFolderDestinationBtnAction = CardService.newAction()
-    .setFunctionName("handleChangeCopyDestinationFolderBtnClick")
+    .setFunctionName("renderSelectCopyFolderDestinationCardPg")
     .setParameters({
       selectedFolderToCopyParsable: selectedFolderToCopyParsable,
     });
