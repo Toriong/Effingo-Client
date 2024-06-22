@@ -155,8 +155,9 @@ const request = (() => {
     #origin: string;
 
     constructor() {
-      this.#origin = "https://040e2685968955c1706a538cd6042dc7.serveo.net";
+      this.#origin = "https://0cb915414e4a331e4c3979851f78c690.serveo.net";
     }
+
     get(path = "") {
       UrlFetchApp.fetch(`${this.#origin}/${path}`);
     }
