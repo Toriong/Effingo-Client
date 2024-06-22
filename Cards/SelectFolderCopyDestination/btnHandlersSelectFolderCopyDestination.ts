@@ -56,31 +56,57 @@ function handleSeeMoreBtnClick(event: Required<IGScriptAppEvent>) {
   // add the new page of folders to the vector that holds the current folders being displayed
   // the next page of folders has been received from the server
   // execute the getGdriveItems function to get the next page of folders, pass the next page token for its argument
-  // get the following parameters from the handleSeeMoreBtnClick function: { gdriveNextPageToken, currentDisplaySelectableFolders }
+  // get the following parameters from the handleSeeMoreBtnClick function: { gdriveNextPageToken, displayedSelectableFolders }
 
   const {
     gdriveNextPageToken,
-    currentDisplaySelectableFolders,
+    displayedSelectableFolders,
     selectedParentFolderId,
   } = event.parameters;
 
   if (
     !selectedParentFolderId ||
-    !currentDisplaySelectableFolders ||
+    !displayedSelectableFolders ||
     !gdriveNextPageToken
   ) {
     return;
   }
 
+  const currentDisplaySelectableFoldersParsed = JSON.parse(
+    displayedSelectableFolders
+  ) as ISelectedItem[];
   const getGdriveItemsResult = apiServices.getGdriveItems<{
     gdrive_items: TGdriveItemsFromServer[];
     gdrive_next_page_token: string;
   }>(selectedParentFolderId, 5, 5, gdriveNextPageToken);
+
+  // GOAL: add the new folders to the current folders that is being displayed onto the ui
+  if (!getGdriveItemsResult.data.gdrive_items) {
+    return;
+  }
+
+  // after adding the new items received from the server set the parameters of the event object that will be passed in for the
 }
 
+function addSectionsToFolderCard(
+  folderCard: GoogleAppsScript.Card_Service.CardBuilder
+) {}
+
 function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
-  // make a request to the server to get the root folders of the user's drive.
-  // send the post request to get the root folders of the user's drive
+  // GOAL: call this function again when the user clicks on the "See More Folder" button
+  // -get the folders from the server
+  // -for the event object, pass the nextPageToken, and pass the current displayed folders
+  // -after the folders from the server is received, add them to the array of currentDisplayedFolders
+  // -create a variable called 'currentDisplayedFolders' set it equal to the folders that was passed for event object
+  // -if there is no such array passed for the event object, then set 'currentDisplayedFolders' to an empty array
+  // -get the folders received from the server
+  // -push those folders into the var: currentDisplayedFolders
+  // -use that as the loop to create the card sections for the ui
+  request.post({
+    map: JSON.stringify({
+      parameters: event.parameters,
+    }),
+  });
 
   if (
     !event.parameters?.selectedFolderToCopyParsable ||
@@ -89,6 +115,18 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     return;
   }
 
+  const {
+    gdriveNextPageToken,
+    displayedSelectableFolders: displayedSelectableFoldersStringified,
+    selectedFolderToCopyParsable,
+  } = event.parameters;
+  const displayedSelectableFolders = getIsParsable(
+    displayedSelectableFoldersStringified
+  )
+    ? (JSON.parse(
+        displayedSelectableFoldersStringified
+      ) as TGdriveItemsFromServer[])
+    : [];
   const headerTxtParagraph = CardService.newTextParagraph().setText(
     "<b>Select the copy destination folder: </b>"
   );
@@ -97,7 +135,12 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
   const getGdriveItemsResult = apiServices.getGdriveItems<{
     gdrive_items: TGdriveItemsFromServer[];
     gdrive_next_page_token: string;
-  }>(event.parameters.parentFolderId || "root", 5, 5);
+  }>(
+    event.parameters.parentFolderId || "root",
+    5,
+    5,
+    gdriveNextPageToken ?? ""
+  );
   const card = CardService.newCardBuilder()
     .setName("selectCopyFolderDestination")
     .addSection(headerSection);
@@ -121,22 +164,21 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     return actionResponse.build();
   }
 
-  // cache these folders in order to display them for the next render when the user clicks on the "see more folders" button
-  for (const folder of getGdriveItemsResult?.data?.gdrive_items) {
+  displayedSelectableFolders.push(...getGdriveItemsResult.data.gdrive_items);
+
+  for (const folder of displayedSelectableFolders) {
     const folderName = CardService.newTextParagraph().setText(folder.name);
     const viewChildrenBtnAction = CardService.newAction()
       .setFunctionName("renderSelectCopyFolderDestinationCardPg")
       .setParameters({
         parentFolderId: folder.id,
-        selectedFolderToCopyParsable:
-          event.parameters.selectedFolderToCopyParsable,
+        selectedFolderToCopyParsable: selectedFolderToCopyParsable,
       });
     const selectBtnAction = CardService.newAction()
       .setFunctionName("handleSelectFolderBtnClick")
       .setParameters({
         copyDestinationFolderId: folder.id,
-        selectedFolderToCopyParsable:
-          event.parameters.selectedFolderToCopyParsable,
+        selectedFolderToCopyParsable: selectedFolderToCopyParsable,
         // put the path to the target folder here
         copyDestinationFolderName: folder.name,
       });
@@ -156,12 +198,16 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
   }
 
   if (getGdriveItemsResult.data.gdrive_next_page_token) {
+    // create a function that will create and return the parameters
+    const parameters: TSetParametersArg = {
+      selectedFolderToCopyParsable,
+      displayedSelectableFolders: JSON.stringify(displayedSelectableFolders),
+      gdriveNextPageToken: getGdriveItemsResult.data.gdrive_next_page_token,
+    };
     const action = CardService.newAction()
-      .setFunctionName("handleSeeMoreFoldersBtnClick")
-      .setParameters({
-        currentFolders: JSON.stringify(getGdriveItemsResult.data.gdrive_items),
-        gdriveNextPageToken: getGdriveItemsResult.data.gdrive_next_page_token,
-      });
+      .setFunctionName("renderSelectCopyFolderDestinationCardPg")
+      .setParameters(parameters);
+    // PUT THE ABOVE INTO A FUNCTION
     const viewMoreFoldersBtn = CardService.newTextButton()
       .setText("See More Folders")
       .setOnClickAction(action);
@@ -169,6 +215,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
       CardService.newCardSection().addWidget(viewMoreFoldersBtn);
     card.addSection(viewMoreFolderSection);
   }
+
   const nav = CardService.newNavigation().pushCard(card.build());
   const actionResponse =
     CardService.newActionResponseBuilder().setNavigation(nav);

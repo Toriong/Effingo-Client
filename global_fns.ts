@@ -163,7 +163,7 @@ const request = (() => {
     #origin: string;
 
     constructor() {
-      this.#origin = "https://0cb915414e4a331e4c3979851f78c690.serveo.net";
+      this.#origin = "https://c609d71a4cf1d43c1e568013ebae6581.serveo.net";
     }
 
     get(path = "") {

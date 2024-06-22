@@ -26,6 +26,9 @@ type TGdriveItemsFromServer = {
   mime_type: string;
   parents: string[];
 };
+type TSetParametersArg = Partial<
+  Record<keyof TUserProperties | TParameterKeys, string>
+>;
 /** Used the property service object of google app script. */
 interface TUserProperties
   extends TSelectedItemsProperty,
