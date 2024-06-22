@@ -75,7 +75,6 @@ type TParameterKeys =
   | "gdriveItemNamesParsable"
   | "copyDestinationFolderName"
   | "hasIsOnItemSelectedResultPgBeenSet"
-  | "isResetting"
   | "parentFolderId"
   | "gdriveNextPageToken"
   | "selectedParentFolderId"

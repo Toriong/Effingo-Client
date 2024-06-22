@@ -39,14 +39,12 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setFunctionName("renderSelectGdriveItemCardPg")
     .setParameters({
       selectedFolderToCopyParsable: selectedFolderToCopyParsable,
-      isResetting: "true",
     });
   const copyFolderDestinationBtnAction = CardService.newAction()
     .setFunctionName("renderSelectCopyFolderDestinationCardPg")
     .setParameters({
       selectedFolderToCopyParsable: selectedFolderToCopyParsable,
     });
-  // CHANGE SOMETHING?
   const copyFolderDestinationBtn = CardService.newTextButton()
     .setText("Change Copy Folder Destination.")
     .setBackgroundColor(COLORS.SMOKEY_GREY)
@@ -92,6 +90,9 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setTitle("Copy & Permissions")
     .setSubtitle("Your selected item will appear below.")
     .setImageUrl(IMGS.TOOLS);
+  const copyFolderAction = CardService.newAction().setFunctionName(
+    "renderCopyFolderProgressCardPg"
+  );
 
   cardSection.addWidget(selectedFolderToCopyTxtWidget);
   cardServiceOptionsTxtSec.addWidget(includeTheSamePermissionsSwitch);
