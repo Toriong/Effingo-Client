@@ -33,6 +33,7 @@ interface TUserProperties
   itemSelectedResultPgHeaderTxt: string;
   headerTxtForGdriveSelectedResultsPg: string;
   selectedFolderToCopyParsable: ISelectedItem | null;
+  displayedSelectableFolders: TGdriveItemsFromServer[];
   /** The string can be parse into TFoldersToCopyInfo. */
   foldersToCopyInfo: TFoldersToCopyInfo;
 }
@@ -73,7 +74,6 @@ type TParameterKeys =
   | "hasIsOnItemSelectedResultPgBeenSet"
   | "isResetting"
   | "parentFolderId"
-  | "currentDisplayedSelectableFolders"
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
   | TUserPropertyKeys
