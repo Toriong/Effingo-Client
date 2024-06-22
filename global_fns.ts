@@ -93,7 +93,7 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
     copyDestinationFolder: copyFolderDestinationName,
   });
 
-  return renderCopyFolderCardPg(event);
+  return renderSelectGdriveItemCardPg(event);
 }
 
 function setIsUserOnItemSelectedResultsPg(isOnItemSelectedResultPg: boolean) {

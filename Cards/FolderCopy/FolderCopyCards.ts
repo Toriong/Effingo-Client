@@ -1,6 +1,4 @@
-function renderCopyFolderCardPg(event: IGScriptAppEvent) {
-  // request.post({ map: JSON.stringify(event) });
-
+function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
   if (!event.parameters) {
     return;
   }
@@ -38,7 +36,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
   const cardServiceOptionsTxtSec =
     CardService.newCardSection().addWidget(copyFolderOpt);
   const resetCopyFolderDestinationBtnAction = CardService.newAction()
-    .setFunctionName("renderCopyFolderCardPg")
+    .setFunctionName("renderSelectGdriveItemCardPg")
     .setParameters({
       selectedFolderToCopyParsable: selectedFolderToCopyParsable,
       isResetting: "true",
@@ -48,6 +46,7 @@ function renderCopyFolderCardPg(event: IGScriptAppEvent) {
     .setParameters({
       selectedFolderToCopyParsable: selectedFolderToCopyParsable,
     });
+  // CHANGE SOMETHING?
   const copyFolderDestinationBtn = CardService.newTextButton()
     .setText("Change Copy Folder Destination.")
     .setBackgroundColor(COLORS.SMOKEY_GREY)

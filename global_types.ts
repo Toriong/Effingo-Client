@@ -73,6 +73,9 @@ type TParameterKeys =
   | "hasIsOnItemSelectedResultPgBeenSet"
   | "isResetting"
   | "parentFolderId"
+  | "currentDisplaySelectableFolders"
+  | "gdriveNextPageToken"
+  | "selectedParentFolderId"
   | TUserPropertyKeys
   | keyof ICopyDestinationFolder;
 type TParameters = Partial<{ [key in TParameterKeys]: string }>;
