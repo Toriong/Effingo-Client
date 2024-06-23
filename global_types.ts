@@ -40,12 +40,15 @@ interface TUserProperties
   /** The string can be parse into TFoldersToCopyInfo. */
   foldersToCopyInfo: TFoldersToCopyInfo;
 }
+type TYesOrNo = "Yes" | "No";
 interface IParameters {
   itemSelectedResultPgHeaderTxt: string;
   folderCopyStatus: TFolderCopyStatus;
   lastRefresh: string;
   folderToCopyId: string;
   folderNameToCopy: string;
+  txtIsCopyingTheSamePermissions: TYesOrNo;
+  txtIsCopyingOnlyFolders: TYesOrNo;
 }
 type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys

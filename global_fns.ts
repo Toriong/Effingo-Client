@@ -147,7 +147,7 @@ const request = (() => {
     #origin: string;
 
     constructor() {
-      this.#origin = "https://ten-crews-rhyme.loca.lt";
+      this.#origin = "https://warm-peas-act.loca.lt";
     }
 
     get(path = "") {
