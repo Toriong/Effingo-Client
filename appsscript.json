@@ -1,29 +1,29 @@
 {
-	"timeZone": "America/New_York",
-	"dependencies": {},
-	"exceptionLogging": "STACKDRIVER",
-	"oauthScopes": [
-		"https://www.googleapis.com/auth/drive.addons.metadata.readonly",
-		"https://www.googleapis.com/auth/drive",
-		"https://www.googleapis.com/auth/script.locale",
-		"https://www.googleapis.com/auth/script.scriptapp",
-		"https://www.googleapis.com/auth/script.external_request"
-	],
-	"runtimeVersion": "V8",
-	"addOns": {
-		"common": {
-			"name": "Effingo",
-			"logoUrl": "https://effingo.s3.us-east-2.amazonaws.com/folderManagerSmallPic.png",
-			"useLocaleFromApp": true,
-			"homepageTrigger": {
-				"runFunction": "handleHomePgRender",
-				"enabled": true
-			}
-		},
-		"drive": {
-			"onItemsSelectedTrigger": {
-				"runFunction": "handleOnDriveItemsSelected"
-			}
-		}
-	}
+  "timeZone": "America/New_York",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/script.locale",
+    "https://www.googleapis.com/auth/script.scriptapp",
+    "https://www.googleapis.com/auth/script.external_request"
+  ],
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Effingo",
+      "logoUrl": "https://effingo.s3.us-east-2.amazonaws.com/folderManagerSmallPic.png",
+      "useLocaleFromApp": true,
+      "homepageTrigger": {
+        "runFunction": "handleHomePgRender",
+        "enabled": true
+      }
+    },
+    "drive": {
+      "onItemsSelectedTrigger": {
+        "runFunction": "handleOnDriveItemsSelected"
+      }
+    }
+  }
 }

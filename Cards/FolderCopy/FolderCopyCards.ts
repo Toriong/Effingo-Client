@@ -19,9 +19,8 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     return;
   }
 
-  const card = CardService.newCardBuilder();
-  const cardSection = CardService.newCardSection();
-
+  const selectedGdriveItemToolsCard = CardService.newCardBuilder();
+  const copyFolderCardSection = CardService.newCardSection();
   const selectedFolderToCopyTxtWidget = CardService.newTextParagraph().setText(
     `<b>Selected Folder</b>: <i>${selectedFolder.title}</i>`
   );
@@ -54,11 +53,10 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setBackgroundColor(COLORS.WARNING_ORANGE)
     .setOnClickAction(resetCopyFolderDestinationBtnAction);
 
-  cardServiceOptionsTxtSec.addWidget(copyDestinationFolderTxtWidget);
-
-  cardServiceOptionsTxtSec.addWidget(copyFolderDestinationBtn);
-
-  cardServiceOptionsTxtSec.addWidget(resetCopyFolderDestinationBtn);
+  cardServiceOptionsTxtSec
+    .addWidget(copyDestinationFolderTxtWidget)
+    .addWidget(copyFolderDestinationBtn)
+    .addWidget(resetCopyFolderDestinationBtn);
 
   const willCopyFoldersOnly = false;
   const willIncludesTheSamePermissions = false;
@@ -73,6 +71,18 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
           CardService.newAction().setFunctionName("handleSwitchChange")
         )
     );
+  const copyFolderBtnParameters: { [key: string]: string } = {
+    folderToCopyId: selectedFolder.id,
+    folderNameToCopy: selectedFolder.title,
+    folderCopyStatus: "ongoing",
+  };
+  const copyFolderAction = CardService.newAction()
+    .setFunctionName("renderCopyFolderProgressCardPg")
+    .setParameters(copyFolderBtnParameters);
+  const copyFolderTxtBtn = CardService.newTextButton()
+    .setOnClickAction(copyFolderAction)
+    .setText("COPY FOLDER")
+    .setBackgroundColor("#1877F2");
   const includeTheSamePermissionsSwitch = CardService.newDecoratedText()
     .setText(
       "Include the same permissions (the folders and files will be shared with the same users)."
@@ -90,21 +100,21 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setTitle("Copy & Permissions")
     .setSubtitle("Your selected item will appear below.")
     .setImageUrl(IMGS.TOOLS);
-  const copyFolderAction = CardService.newAction().setFunctionName(
-    "renderCopyFolderProgressCardPg"
+
+  copyFolderCardSection
+    .addWidget(selectedFolderToCopyTxtWidget)
+    .addWidget(includeTheSamePermissionsSwitch)
+    .addWidget(copyOnlyFoldersSwitch)
+    .addWidget(copyFolderTxtBtn);
+
+  selectedGdriveItemToolsCard
+    .setHeader(cardHeader)
+    .addSection(cardServiceOptionsTxtSec)
+    .addSection(copyFolderCardSection);
+
+  const nav = CardService.newNavigation().pushCard(
+    selectedGdriveItemToolsCard.build()
   );
-
-  cardSection.addWidget(selectedFolderToCopyTxtWidget);
-  cardServiceOptionsTxtSec.addWidget(includeTheSamePermissionsSwitch);
-  cardServiceOptionsTxtSec.addWidget(copyOnlyFoldersSwitch);
-
-  card.setHeader(cardHeader);
-
-  card.addSection(cardSection);
-
-  card.addSection(cardServiceOptionsTxtSec);
-
-  const nav = CardService.newNavigation().pushCard(card.build());
   const actionResponse =
     CardService.newActionResponseBuilder().setNavigation(nav);
 

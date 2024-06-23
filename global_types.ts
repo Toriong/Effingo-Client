@@ -26,25 +26,32 @@ type TGdriveItemsFromServer = {
   mime_type: string;
   parents: string[];
 };
+type TFolderCopyStatus = "ongoing" | "success" | "failure";
 type TSetParametersArg = Partial<
   Record<keyof TUserProperties | TParameterKeys, string>
 >;
-/** Used the property service object of google app script. */
+/** What can be stored in the google app script property service object. */
 interface TUserProperties
   extends TSelectedItemsProperty,
     TUserPropertiesBoolProperties {
-  itemSelectedResultPgHeaderTxt: string;
   headerTxtForGdriveSelectedResultsPg: string;
   selectedFolderToCopyParsable: ISelectedItem | null;
   displayedSelectableFolders: TGdriveItemsFromServer[];
   /** The string can be parse into TFoldersToCopyInfo. */
   foldersToCopyInfo: TFoldersToCopyInfo;
 }
-
+interface IParameters {
+  itemSelectedResultPgHeaderTxt: string;
+  folderCopyStatus: TFolderCopyStatus;
+  lastRefresh: string;
+  folderToCopyId: string;
+  folderNameToCopy: string;
+}
+type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
-  ? TUserProperties[TData]
+  ? TAvailableParametersForHandlerFn[TData]
   : never;
-type TUserPropertyKeys = keyof TUserProperties;
+type TUserPropertyKeys = keyof TAvailableParametersForHandlerFn;
 type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
   T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 
@@ -79,7 +86,8 @@ type TParameterKeys =
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
   | "willUpdateCard"
-  | TUserPropertyKeys
+  | "folderToCopyErrMsg"
+  | keyof TAvailableParametersForHandlerFn
   | keyof ICopyDestinationFolder;
 type TParameters = Partial<{ [key in TParameterKeys]: string }>;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {

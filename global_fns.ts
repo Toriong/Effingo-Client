@@ -1,6 +1,3 @@
-//FOR THE HOME CARD FUNCTIONS
-function handleCopyFolderStructureBtn() {}
-
 function parseToObj<TData extends object>(stringifiedObj: string): TData {
   return JSON.parse(stringifiedObj);
 }
@@ -23,39 +20,6 @@ function handleFolderItemsCopy() {
   return newNavigationStack;
 }
 
-function displayFolderCards() {
-  const { createHeader } = CardServices;
-  const copyFolderStructureHeader = createHeader(
-    "Structure copy",
-    IMGS.ICON_FOLDER_STRUCTURE,
-    "copy_folder_structure_icon",
-    CardService.ImageStyle.SQUARE,
-    "Copy only the folder's sub folders."
-  );
-  const copyFolderStructureOptCard = CardService.newCardBuilder()
-    .setHeader(copyFolderStructureHeader)
-    .build();
-  const deepCopyHeader = createHeader(
-    "Deep Copy",
-    IMGS.ICON_COPY_FOLDER_OPT,
-    "deep_copy_icon",
-    CardService.ImageStyle.SQUARE,
-    "Copy folders and their contents."
-  );
-  const deepCopyCard = CardService.newCardBuilder()
-    .setHeader(deepCopyHeader)
-    .build();
-  const navigation = CardService.newNavigation()
-    .pushCard(copyFolderStructureOptCard)
-    .pushCard(deepCopyCard);
-
-  const actionResponse = CardService.newActionResponseBuilder()
-    .setNavigation(navigation)
-    .build();
-
-  return actionResponse;
-}
-
 function getIsParsable<TData extends string>(val: TData) {
   try {
     JSON.parse(val);
@@ -67,10 +31,19 @@ function getIsParsable<TData extends string>(val: TData) {
 }
 
 function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
-  const copyFoldersInfo =
+  let copyFoldersInfo =
     getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
+  copyFoldersInfo =
+    copyFoldersInfo && Object.keys(copyFoldersInfo).length > 0
+      ? copyFoldersInfo
+      : {};
   let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
-
+  request.post({
+    map: JSON.stringify({
+      activieCursorId: event.drive?.activeCursorItem?.id,
+      copyFoldersInfo: copyFoldersInfo,
+    }),
+  });
   if (
     copyFoldersInfo &&
     event.drive.activeCursorItem?.id &&
@@ -79,8 +52,19 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
     copyFolderDestinationName =
       copyFoldersInfo[event.drive.activeCursorItem.id]
         .copyDestinationFolderName;
+  } else if (
+    event.drive.activeCursorItem?.id &&
+    !copyFoldersInfo[event.drive.activeCursorItem.id]
+  ) {
+    const folderCopyDestination = {
+      [event.drive.activeCursorItem.id]: {
+        copyDestinationFolderName: copyFolderDestinationName,
+      },
+    } as TFoldersToCopyInfo;
+    request.post({ map: JSON.stringify("YO") });
+    copyFoldersInfo = { ...copyFoldersInfo, ...folderCopyDestination };
+    setUserProperty("foldersToCopyInfo", copyFoldersInfo);
   }
-
   const headerTxt = getUserProperty("headerTxtForGdriveSelectedResultsPg");
 
   if (!event.parameters) {
@@ -132,9 +116,9 @@ function resetUserProperties() {
 function resetSpecifiedUserProperties(userPropertyKeys: TUserPropertyKeys[]) {
   const userProperties = PropertiesService.getUserProperties();
 
-  userPropertyKeys.forEach((key) => {
+  for (const key of userPropertyKeys) {
     userProperties.deleteProperty(key);
-  });
+  }
 }
 
 function getUserProperty(cacheKeyName: TUserPropertyKeys) {
@@ -151,7 +135,7 @@ function getUserPropertyParsed<TData>(
 ): TData | null {
   const targetVal = getUserProperty(cacheKeyName);
 
-  if (!targetVal || getIsParsable(targetVal)) {
+  if (!targetVal || !getIsParsable(targetVal)) {
     return null;
   }
 
@@ -163,7 +147,7 @@ const request = (() => {
     #origin: string;
 
     constructor() {
-      this.#origin = "https://c609d71a4cf1d43c1e568013ebae6581.serveo.net";
+      this.#origin = "https://ten-crews-rhyme.loca.lt";
     }
 
     get(path = "") {

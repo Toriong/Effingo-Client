@@ -18,7 +18,7 @@ function handleSelectFolderBtnClick(event: IGScriptAppEvent) {
   const selectedFolderToCopy = JSON.parse(
     selectedFolderToCopyParsable
   ) as ISelectedItem;
-  let foldersToCopyInfo =
+  const foldersToCopyInfo =
     getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo") ?? {};
   let targetFolderToCopyInfo: ICopyDestinationFolder | null =
     foldersToCopyInfo[selectedFolderToCopy.id];
