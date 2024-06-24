@@ -102,27 +102,24 @@ const request = (() => {
       UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`);
     }
     // throw a compiler error if the string start with "/"
-    post(payload: { [key: string]: string }, path = ""): string | null {
+    post(payload: { [key: string]: string }, path = "") {
       try {
         const response = UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`, {
           method: "post",
           payload,
         });
         const responseCode = response.getResponseCode();
+        const contextTxt = response.getContentText();
 
         if (responseCode !== 200) {
           throw new Error(
-            `Recieved a error ${responseCode} response from the server.`
+            `Recieved a ${responseCode} error response from the server. Error message: ${contextTxt}.`
           );
         }
 
-        return response.getContentText();
+        return { parsableData: response.getContentText() };
       } catch (error) {
-        const failedToSendPostReq = `Something went wrong. Application code error: ${error}`;
-
-        console.error(failedToSendPostReq);
-
-        return null;
+        return { errMsg: JSON.stringify(error) };
       }
     }
   }

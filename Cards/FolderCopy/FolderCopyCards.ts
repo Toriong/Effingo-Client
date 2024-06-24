@@ -20,8 +20,6 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     return;
   }
 
-  // Send the copy folder request here
-
   const txtIsCopyingOnlyFolders =
     getUserProperty("txtIsCopyingOnlyFolders") ?? "No";
   const txtIsCopyingTheSamePermissions =

@@ -6,7 +6,7 @@
 function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
   const card = CardService.newCardBuilder();
   const foldersSelected =
-    getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
+    GLOBAL_FNS.getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
   const {
     folderToCopyErrMsg,
     folderToCopyId,

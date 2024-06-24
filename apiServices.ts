@@ -12,7 +12,7 @@ const apiServices = (() => {
   ) {
     try {
       const token = ScriptApp.getOAuthToken();
-      const responseBodyStringified = request.post(
+      const responseResult = request.post(
         {
           gdrive_item_type: gdriveItemType,
           parent_folder_id: parentFolderId,
@@ -24,11 +24,17 @@ const apiServices = (() => {
         "get-gdrive-items"
       );
 
-      if (!responseBodyStringified) {
-        throw new Error("Failed to get the gdrive items of the target folder.");
+      if (responseResult.errMsg) {
+        throw new Error(
+          `Failed to get the gdrive items of the target folder. Error message from server: ${responseResult.errMsg}`
+        );
       }
 
-      const responseBody = JSON.parse(responseBodyStringified) as {
+      if (!responseResult.parsableData) {
+        throw new Error("Did not receive a body from the server response.");
+      }
+
+      const responseBody = JSON.parse(responseResult.parsableData) as {
         data: string;
       };
       const responseBodyData = JSON.parse(responseBody.data) as TData;
@@ -61,62 +67,64 @@ const apiServices = (() => {
     copyDestinationFolderName?: string,
     copyToFolderId?: string
   ) {
-    const userEmail = Session.getActiveUser().getEmail();
-    const emailGreetingName = Drive.About.get().user.displayName;
-    const copyFolderJobId = Utilities.getUuid();
-    const dateOfCopy = GLOBAL_FNS.getCurrentDate({
-      willFormatHours: true,
-      willFormatMins: true,
-      willFormatSeconds: true,
-    });
-    const reqBody: ISendCopyFolderReqBody = {
-      copy_destination_folder_name: copyDestinationFolderName,
-      copy_to_folder_id: copyToFolderId ?? "",
-      date_of_copy: dateOfCopy,
-      recipient_email: userEmail,
-      recipient_email_greetings_name: emailGreetingName,
-      access_token: ScriptApp.getOAuthToken(),
-      folder_id_to_copy_from: folderToCopyId,
-      copy_from_folder_name: folderToCopyName,
-      name_of_folder_to_create: nameOfFolderToCreate,
-      folder_copy_procedure_id: copyFolderJobId,
-    };
+    try {
+      const userEmail = Session.getActiveUser().getEmail();
+      const emailGreetingName = Drive.About.get().user.displayName;
+      const copyFolderJobId = Utilities.getUuid();
+      const dateOfCopy = GLOBAL_FNS.getCurrentDate({
+        willFormatHours: true,
+        willFormatMins: true,
+        willFormatSeconds: true,
+      });
+      const reqBody: ISendCopyFolderReqBody = {
+        copy_destination_folder_name: copyDestinationFolderName,
+        copy_to_folder_id: copyToFolderId ?? "",
+        date_of_copy: dateOfCopy,
+        recipient_email: userEmail,
+        recipient_email_greetings_name: emailGreetingName,
+        access_token: ScriptApp.getOAuthToken(),
+        folder_id_to_copy_from: folderToCopyId,
+        copy_from_folder_name: folderToCopyName,
+        name_of_folder_to_create: nameOfFolderToCreate,
+        folder_copy_procedure_id: copyFolderJobId,
+      };
+      const responseResult = request.post(
+        { ...reqBody },
+        `/${API_PATHS.copyFolders}`
+      );
+
+      if (responseResult.errMsg) {
+        throw new Error(
+          `Failed to get the gdrive items of the target folder. Error message from server: ${responseResult.errMsg}`
+        );
+      }
+
+      if (
+        !responseResult.parsableData ||
+        !GLOBAL_FNS.getIsParsable(responseResult.parsableData)
+      ) {
+        throw new Error(
+          "Did not receive either a body or parsable body from the server response."
+        );
+      }
+      const responseBody = JSON.parse(responseResult.parsableData) as {
+        copyFolderJobStatus: string;
+      };
+
+      return {
+        copyFolderJobId,
+        copyFolderJobStatus: responseBody.copyFolderJobStatus,
+      };
+    } catch (error) {
+      return {
+        copyFolderJobStatus: "failedToSendCopyFolderReq",
+        errMsg: `Failed to start the folder copy job. Error message: ${error}`,
+      };
+    }
   }
-
-  // GOAL: this function will send the request that will copy the target folder for the user.
-  // function name: sendCopyFolderReq
-  // parameters:
-  // folder_id_copy_from: string
-  // copy_to_folder_id: string (present if the folder already exist)
-  // copy_destination_folder_name: string (present if the folder already exist)
-  // name_of_folder_to_create: (not present if the copy folder destination already exist)
-  // folderToCopyName: string (the folder that is being copied)
-  // recipient_email_greetings_name: string
-
-  // function body:
-  // will generate the folder_copy_procedure_id
-  // will generate the date of the folder copy
-  // the name of the user
-  // will send the request to the following url: '{server_url}/start-copy-folder-job'
-  // the post request will have the following body:
-  // access_token: string
-  // folder_id_copy_from: string
-  // copy_to_folder_id: string (present if the folder already exist)
-  // copy_destination_folder_name: string (present if the folder already exist)
-  // name_of_folder_to_create: (not present if the copy folder destination already exist)
-  // copy_from_folder_name: string (the folder that is being copied)
-  // date_of_copy: string
-  // recipient_email: string
-  // folder_copy_procedure_id: string
-  // recipient_email_greetings_name: string
-
-  // the return value:
-  // folder_copy_procedure_id
-
-  // NOTES:
-  // where do I get the email of the user who is using my app?
 
   return {
     getGdriveItems,
+    sendCopyFolderReq,
   };
 })();
