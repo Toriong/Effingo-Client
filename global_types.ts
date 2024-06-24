@@ -39,6 +39,8 @@ interface TUserProperties
   displayedSelectableFolders: TGdriveItemsFromServer[];
   /** The string can be parse into TFoldersToCopyInfo. */
   foldersToCopyInfo: TFoldersToCopyInfo;
+  txtIsCopyingOnlyFolders: string;
+  txtIsCopyingTheSamePermissions: TYesOrNo;
 }
 type TYesOrNo = "Yes" | "No";
 interface IParameters {
@@ -47,14 +49,13 @@ interface IParameters {
   lastRefresh: string;
   folderToCopyId: string;
   folderNameToCopy: string;
-  txtIsCopyingTheSamePermissions: TYesOrNo;
   txtIsCopyingOnlyFolders: TYesOrNo;
 }
 type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
   ? TAvailableParametersForHandlerFn[TData]
   : never;
-type TUserPropertyKeys = keyof TAvailableParametersForHandlerFn;
+type TUserPropertyKeys = keyof TUserProperties;
 type TSelectedUserPropertyKey<T extends TUserPropertyKeys> =
   T extends TUserPropertyKeys ? Extract<TUserPropertyKeys, T> : never;
 

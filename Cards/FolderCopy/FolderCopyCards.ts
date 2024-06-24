@@ -10,6 +10,7 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     return;
   }
 
+  const { getIsParsable, getUserProperty } = GLOBAL_FNS;
   const selectedFolder =
     selectedFolderToCopyParsable && getIsParsable(selectedFolderToCopyParsable)
       ? (JSON.parse(selectedFolderToCopyParsable) as ISelectedItem)
