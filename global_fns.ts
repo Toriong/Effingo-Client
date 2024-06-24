@@ -121,13 +121,14 @@ function resetSpecifiedUserProperties(userPropertyKeys: TUserPropertyKeys[]) {
   }
 }
 
-function getUserProperty(cacheKeyName: TUserPropertyKeys) {
+function getUserProperty(cacheKeyName: TUserPropertyKeys): string | null {
   const userProperties = PropertiesService.getUserProperties();
   const cacheVal = userProperties.getProperty(cacheKeyName);
 
   if (!cacheVal) {
     return null;
   }
+
   return cacheVal;
 }
 function getUserPropertyParsed<TData>(
@@ -142,12 +143,43 @@ function getUserPropertyParsed<TData>(
   return JSON.parse(targetVal);
 }
 
+function addParameterForBtnHandlerEvent<
+  TDataA extends keyof TAvailableParametersForHandlerFn,
+  TDataB extends TAvailableParametersForHandlerFn[TDataA]
+>(
+  parameterKey: TDataA,
+  valForCorrespondingKey: TDataB,
+  parameters: { [key: string]: string } = {}
+) {
+  return {
+    ...parameters,
+    [parameterKey]: JSON.stringify(valForCorrespondingKey),
+  };
+}
+
+function stringifyParameters<
+  TDataA extends keyof TAvailableParametersForHandlerFn,
+  TDataB extends TAvailableParametersForHandlerFn[TDataA]
+>(parameters: { [key in TDataA]: TDataB }) {
+  return Object.values(parameters).reduce(
+    (
+      finalParametersObj: { [key in TDataA]: string },
+      [key, val]: [TDataA, TDataB]
+    ) => {
+      return Object.assign(finalParametersObj, {
+        [key]: typeof val === "string" ? val : JSON.stringify(val),
+      });
+    },
+    {}
+  ) as { [key in TDataA]: string };
+}
+
 const request = (() => {
   class Request {
     #origin: string;
 
     constructor() {
-      this.#origin = "https://warm-peas-act.loca.lt";
+      this.#origin = "https://25d44406316bc6ca1629e8840e340d4b.serveo.net";
     }
 
     get(path = "") {

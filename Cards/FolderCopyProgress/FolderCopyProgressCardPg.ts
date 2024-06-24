@@ -17,9 +17,6 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     txtIsCopyingOnlyFolders,
   } = event.parameters;
 
-  request.post({ map: JSON.stringify({ parameters: event.parameters }) });
-  request.post({ map: JSON.stringify({ foldersSelected: foldersSelected }) });
-
   if (
     !foldersSelected ||
     folderToCopyErrMsg ||
@@ -57,11 +54,13 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
   );
   const txtParagraphIsCopyingOnlyFolders =
     CardService.newTextParagraph().setText(
-      `Copying only the folders?   ${txtIsCopyingOnlyFolders}`
+      `Copying only the folders?   ${txtIsCopyingOnlyFolders ?? "unknown"}`
     );
   const txtParagraphIsCopyingTheSamePermissions =
     CardService.newTextParagraph().setText(
-      `Copying the same permissions?   ${txtIsCopyingTheSamePermissions}`
+      `Copying the same permissions?   ${
+        txtIsCopyingTheSamePermissions ?? "unknown"
+      }`
     );
   const lastRefreshTxt = CardService.newTextParagraph();
 

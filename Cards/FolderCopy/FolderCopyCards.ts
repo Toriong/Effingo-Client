@@ -19,6 +19,12 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     return;
   }
 
+  // Send the copy folder request here
+
+  const txtIsCopyingOnlyFolders =
+    getUserProperty("txtIsCopyingOnlyFolders") ?? "No";
+  const txtIsCopyingTheSamePermissions =
+    getUserProperty("txtIsCopyingTheSamePermissions") ?? "No";
   const selectedGdriveItemToolsCard = CardService.newCardBuilder();
   const copyFolderCardSection = CardService.newCardSection();
   const selectedFolderToCopyTxtWidget = CardService.newTextParagraph().setText(
@@ -71,14 +77,17 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
           CardService.newAction().setFunctionName("handleSwitchChange")
         )
     );
-  const copyFolderBtnParameters: { [key: string]: string } = {
+  const parameters = {
+    txtIsCopyingOnlyFolders,
+    txtIsCopyingTheSamePermissions,
+    // create a function that generate the correct text color based on the text that you receive from the server
+    folderCopyStatus: '<font color="#808080">ONGOING</font>',
     folderToCopyId: selectedFolder.id,
     folderNameToCopy: selectedFolder.title,
-    folderCopyStatus: "ongoing",
   };
   const copyFolderAction = CardService.newAction()
     .setFunctionName("renderCopyFolderProgressCardPg")
-    .setParameters(copyFolderBtnParameters);
+    .setParameters(parameters);
   const copyFolderTxtBtn = CardService.newTextButton()
     .setOnClickAction(copyFolderAction)
     .setText("COPY FOLDER")
