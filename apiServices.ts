@@ -60,13 +60,27 @@ const apiServices = (() => {
     copy_destination_folder_name: string;
   }
 
+  type ISendCopyFolderReqReturnVal = {
+    copyFolderJobId?: string;
+    copyFolderJobStatus:
+      | "attemptingToSendCopyFolderJobReq"
+      | "failedToSendCopyFolderReq";
+    errMsg?: string;
+  };
+
+  /**
+   * @param copyDestinationFolderName - Pass the name of the folder to copy the content to. This folder will be either created on the server or has been created
+   * by the user.
+   * @param copyToFolderId - If the folder was created already, then pass its id.
+   * @param nameOfFolderToCreate - Only pass a value if the user hasn't created the copy destination folder.
+   */
   function sendCopyFolderReq(
     folderToCopyId: string,
     folderToCopyName: string,
-    nameOfFolderToCreate?: string,
-    copyDestinationFolderName?: string,
+    copyDestinationFolderName: string,
+    nameOfFolderToCreate: string,
     copyToFolderId?: string
-  ) {
+  ): ISendCopyFolderReqReturnVal {
     try {
       const userEmail = Session.getActiveUser().getEmail();
       const emailGreetingName = Drive.About.get().user.displayName;
@@ -108,7 +122,9 @@ const apiServices = (() => {
         );
       }
       const responseBody = JSON.parse(responseResult.parsableData) as {
-        copyFolderJobStatus: string;
+        copyFolderJobStatus:
+          | "attemptingToSendCopyFolderJobReq"
+          | "failedToSendCopyFolderReq";
       };
 
       return {

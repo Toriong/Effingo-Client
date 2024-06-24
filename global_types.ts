@@ -43,6 +43,9 @@ interface TUserProperties
   txtIsCopyingTheSamePermissions: TYesOrNo;
 }
 type TYesOrNo = "Yes" | "No";
+/**
+ * All data type values must be a string.
+ */
 interface IParameters {
   itemSelectedResultPgHeaderTxt: string;
   folderCopyStatus: TFolderCopyStatus;
@@ -50,6 +53,7 @@ interface IParameters {
   folderToCopyId: string;
   folderNameToCopy: string;
   txtIsCopyingOnlyFolders: TYesOrNo;
+  copyFolderJobId: string;
 }
 type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys

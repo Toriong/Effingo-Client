@@ -94,8 +94,7 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin =
-        "https://25d44406316bc6ca1629e8840e340d4b.serveo.net";
+      this.#serverOrigin = "https://true-carrots-pump.loca.lt";
     }
 
     get(path = "") {

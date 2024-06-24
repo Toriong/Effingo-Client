@@ -3,6 +3,8 @@
 // We will immediately delete this job once its done.
 // Back To Home (button)
 
+function renderCopyFolderProgressCardPgUpdated() {}
+
 function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
   const card = CardService.newCardBuilder();
   const foldersSelected =
@@ -12,21 +14,66 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     folderToCopyId,
     folderNameToCopy,
     folderCopyStatus,
-    lastRefresh,
     txtIsCopyingTheSamePermissions,
     txtIsCopyingOnlyFolders,
   } = event.parameters;
 
   if (
-    !foldersSelected ||
-    folderToCopyErrMsg ||
     !folderToCopyId ||
     !folderNameToCopy ||
+    folderToCopyErrMsg ||
     (folderToCopyId && foldersSelected && !foldersSelected[folderToCopyId])
   ) {
-    const errMsg =
-      event.parameters.folderToCopyErrMsg ??
-      "We're copying your folder, but we are unable show its progress.<br><br>Please view the 'View your past copy jobs' card if the job appears there.";
+    const unableToStartFolderCopyJobErrMsg =
+      folderToCopyErrMsg ?? "Couldn't copy your folder. Please try again.";
+    const errMsgTxt = CardService.newTextParagraph().setText(
+      unableToStartFolderCopyJobErrMsg
+    );
+    const section = CardService.newCardSection().addWidget(errMsgTxt);
+
+    card.addSection(section);
+
+    const navigation = CardService.newNavigation().pushCard(card.build());
+    const actionResponse =
+      CardService.newActionResponseBuilder().setNavigation(navigation);
+
+    return actionResponse.build();
+  }
+
+  const folderCopyJobInfo = foldersSelected[folderToCopyId];
+
+  if (!folderCopyJobInfo.copyDestinationFolderName) {
+    const errMsgTxt = CardService.newTextParagraph().setText(
+      "Sorry, but we couldn't start the copy folder job for you. We were unable to retrieve the name of folder to copy the content to. Please try again."
+    );
+    const section = CardService.newCardSection().addWidget(errMsgTxt);
+
+    card.addSection(section);
+
+    const navigation = CardService.newNavigation().pushCard(card.build());
+    const actionResponse =
+      CardService.newActionResponseBuilder().setNavigation(navigation);
+
+    return actionResponse.build();
+  }
+
+  const startCopyJobResponseResult = apiServices.sendCopyFolderReq(
+    folderToCopyId,
+    folderNameToCopy,
+    folderCopyJobInfo.copyDestinationFolderName,
+    folderCopyJobInfo.copyDestinationFolderName,
+    folderCopyJobInfo.copyDestinationFolderId ?? ""
+  );
+
+  if (
+    startCopyJobResponseResult.errMsg ||
+    startCopyJobResponseResult.copyFolderJobStatus ===
+      "failedToSendCopyFolderReq" ||
+    !startCopyJobResponseResult?.copyFolderJobId
+  ) {
+    const errMsg = startCopyJobResponseResult.errMsg
+      ? `Sorry we're unable to start the copy job for this folder. Reason: ${startCopyJobResponseResult.errMsg}.`
+      : "Sorry we're unable to satrt the copy job for this folder. Please try again.";
     const errMsgTxt = CardService.newTextParagraph().setText(errMsg);
     const section = CardService.newCardSection().addWidget(errMsgTxt);
 
@@ -39,7 +86,6 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     return actionResponse.build();
   }
 
-  const { copyDestinationFolderName } = foldersSelected[folderToCopyId];
   const cardHeader = CardService.newCardHeader()
     .setTitle("Folder Copy Results")
     .setImageUrl(IMGS.COPY_ICON);
@@ -47,7 +93,7 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     `<b>Folder To Copy</b>: ${folderNameToCopy}`
   );
   const folderCopyDestination = CardService.newTextParagraph().setText(
-    `<b>Folder Copy Destination</b>: ${copyDestinationFolderName}`
+    `<b>Folder Copy Destination</b>: ${folderCopyJobInfo.copyDestinationFolderName}`
   );
   const statusTxt = CardService.newTextParagraph().setText(
     `Status: ${folderCopyStatus}`
@@ -64,22 +110,23 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     );
   const lastRefreshTxt = CardService.newTextParagraph();
 
-  if (lastRefresh) {
-    lastRefreshTxt.setText(lastRefresh);
-  }
-
   const folderCopyJobDescriptionSec = CardService.newCardSection();
-  const deleteWhenDoneBtnAction = CardService.newAction().setFunctionName(
-    "handleFolderCopyAbortJobBtnClick"
-  );
+  // send a request to the server, get the id of the folder copy job, insert the following:
+  // wasAborted: true
+  const deleteWhenDoneBtnAction = CardService.newAction()
+    .setFunctionName("handleFolderCopyAbortJobBtnClick")
+    .setParameters({
+      copyFolderJobId: startCopyJobResponseResult.copyFolderJobId,
+    });
   const deleteWhenDoneBtn = CardService.newTextButton()
-    .setText("DELETE WHEN DONE")
+    .setText("ABORT JOB")
     .setBackgroundColor(COLORS.WARNING_ORANGE)
     .setOnClickAction(deleteWhenDoneBtnAction);
-  const refreshCopyJobResultsBtnAction =
-    CardService.newAction().setFunctionName(
-      "handleRefreshCopyJobResultsBtnClick"
-    );
+  const refreshCopyJobResultsBtnAction = CardService.newAction()
+    .setFunctionName("renderCopyFolderProgressCardPgUpdated")
+    .setParameters({
+      copyFolderJobId: startCopyJobResponseResult.copyFolderJobId,
+    });
   const refreshCopyJobResultsBtn = CardService.newTextButton()
     .setText("REFRESH")
     .setBackgroundColor(COLORS.SMOKEY_GREY)
