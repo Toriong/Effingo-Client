@@ -114,6 +114,7 @@ type TStrValTypeParmetersKeyNames =
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
   | "willUpdateCard"
+  | "copyFolderJobTimeCompletionMs"
   | "folderToCopyErrMsg";
 type TStrValTypeParameters = Record<TStrValTypeParmetersKeyNames, string>;
 interface TParametersMerged
@@ -133,5 +134,5 @@ interface IGScriptAppEvent extends IUserLocaleAndHostApp {
   userTimezone: ITimeZone;
   userCountry: string;
   drive: IDrive;
-  parameters?: TMakeTypeValsIntoStr<TParametersMerged>;
+  parameters?: Partial<TMakeTypeValsIntoStr<TParametersMerged>>;
 }

@@ -8,12 +8,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
       ? copyFoldersInfo
       : {};
   let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
-  request.post({
-    map: JSON.stringify({
-      activieCursorId: event.drive?.activeCursorItem?.id,
-      copyFoldersInfo: copyFoldersInfo,
-    }),
-  });
   if (
     copyFoldersInfo &&
     event.drive.activeCursorItem?.id &&
@@ -31,7 +25,6 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
         copyDestinationFolderName: copyFolderDestinationName,
       },
     } as TFoldersToCopyInfo;
-    request.post({ map: JSON.stringify("YO") });
     copyFoldersInfo = { ...copyFoldersInfo, ...folderCopyDestination };
     setUserProperty("foldersToCopyInfo", copyFoldersInfo);
   }

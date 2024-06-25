@@ -16,6 +16,7 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     txtIsCopyingTheSamePermissions,
     copyFolderJobId,
     cardUpdateMethod,
+    copyFolderJobTimeCompletionMs,
   } = event.parameters;
 
   const folderCopyJobInfo = foldersSelected[folderToCopyId];
@@ -54,9 +55,14 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     .setBackgroundColor(COLORS.WARNING_ORANGE)
     .setOnClickAction(deleteWhenDoneBtnAction);
   const refreshCopyJobResultsBtnAction = CardService.newAction()
-    .setFunctionName("renderCopyFolderProgressCardPgUpdated")
+    .setFunctionName("handleRefreshCopyJobResultsBtnClick")
     .setParameters({
       copyFolderJobId: copyFolderJobId,
+      folderToCopyId,
+      folderNameToCopy,
+      folderCopyStatus: folderCopyStatus ?? "UNABLE TO RETRIEVE STATUS",
+      txtIsCopyingTheSamePermissions,
+      txtIsCopyingOnlyFolders,
     });
   const refreshCopyJobResultsBtn = CardService.newTextButton()
     .setText("REFRESH")
@@ -74,6 +80,15 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     .addWidget(txtParagraphIsCopyingOnlyFolders)
     .addWidget(txtParagraphIsCopyingTheSamePermissions)
     .addWidget(statusTxt);
+
+  if (copyFolderJobTimeCompletionMs) {
+    const copyFolderJobTimeCompletiontTxt =
+      CardService.newTextParagraph().setText(
+        `Completion Time: ${copyFolderJobTimeCompletionMs}`
+      );
+
+    folderCopyJobDescriptionSec.addWidget(copyFolderJobTimeCompletiontTxt);
+  }
 
   if (lastRefreshTxt) {
     folderCopyJobDescriptionSec.addWidget(lastRefreshTxt);
@@ -218,9 +233,14 @@ function renderCopyFolderProgressCardPgWithErrorHandling(
     .setBackgroundColor(COLORS.WARNING_ORANGE)
     .setOnClickAction(deleteWhenDoneBtnAction);
   const refreshCopyJobResultsBtnAction = CardService.newAction()
-    .setFunctionName("renderCopyFolderProgressCardPgUpdated")
+    .setFunctionName("handleRefreshCopyJobResultsBtnClick")
     .setParameters({
       copyFolderJobId: startCopyJobResponseResult.copyFolderJobId,
+      folderToCopyId,
+      folderNameToCopy,
+      folderCopyStatus,
+      txtIsCopyingTheSamePermissions,
+      txtIsCopyingOnlyFolders,
     });
   const refreshCopyJobResultsBtn = CardService.newTextButton()
     .setText("REFRESH")

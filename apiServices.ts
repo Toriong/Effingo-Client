@@ -19,7 +19,8 @@ const apiServices = (() => {
   }
   interface ICopyFolderJobResult {
     status: TFolderCopyStatus;
-    copyGdriveItemsResults?: { [key: string]: string }[];
+    copy_folder_job_results?: { [key: string]: string }[];
+    copy_folder_job_total_time_ms?: number;
   }
   type ISendCopyFolderReqReturnVal = {
     copyFolderJobId?: string;
@@ -30,8 +31,9 @@ const apiServices = (() => {
   };
 
   const API_PATHS = {
-    startCopyFolderJob: "start-copy-folder-job",
-    getCopyFolderJobResults: "get-copy-folder-job-result",
+    startCopyFolderJob: "/start-copy-folder-job",
+    getCopyFolderJobResults: "/get-copy-folder-job-result",
+    getGdriveItems: "/get-gdrive-items",
   } as const;
 
   function getCopyFolderJobResult(
@@ -40,11 +42,6 @@ const apiServices = (() => {
     willSkipCacheQuery = false,
     willQueryDbIfJobIsntCache = false
   ): ICopyFolderJobResult {
-    // the id of the copy folder job, will_get_status_only will be set to true
-    // create fn a api service that will send a request to your server that will get the status
-    // call it getCopyFolderJobStatus
-    // -it will return one of the following strings: "ongoing" | "succes" | "failure" | "statusRetrievalFailure"
-    // -or if the dev wants all of the results then return the array that contains all of the results of the copying of the gdrive item
     const reqBody: IGetCopyFolderJobResultReqBody = {
       copy_folder_job_id: copyFolderJobId,
       will_get_status_only: willGetStatusOnly,
@@ -58,13 +55,18 @@ const apiServices = (() => {
 
     if (
       responseBody.errMsg ||
+      !responseBody.parsableData ||
       (responseBody.parsableData &&
         !GLOBAL_FNS.getIsParsable(responseBody.parsableData))
     ) {
       return { status: "UNABLE TO RETRIEVE STATUS" };
     }
 
-    return JSON.parse(responseBody.parsableData) as ICopyFolderJobResult;
+    const folderCopyResultsParsable = JSON.parse(responseBody.parsableData) as {
+      data: string;
+    };
+
+    return JSON.parse(folderCopyResultsParsable.data) as ICopyFolderJobResult;
   }
 
   function getGdriveItems<TData>(
@@ -85,7 +87,7 @@ const apiServices = (() => {
           page_size: pageSize.toString(),
           query_limit: queryLimit.toString(),
         },
-        "get-gdrive-items"
+        API_PATHS.getGdriveItems
       );
 
       if (responseResult.errMsg) {
@@ -147,7 +149,7 @@ const apiServices = (() => {
       };
       const responseResult = request.post(
         { ...reqBody },
-        `/${API_PATHS.startCopyFolderJob}`
+        API_PATHS.startCopyFolderJob
       );
 
       if (responseResult.errMsg) {
@@ -186,5 +188,6 @@ const apiServices = (() => {
     getGdriveItems,
     sendCopyFolderReq,
     getCopyFolderJobResult,
+    API_PATHS,
   };
 })();

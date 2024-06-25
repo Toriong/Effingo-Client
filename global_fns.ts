@@ -90,18 +90,21 @@ const GLOBAL_FNS = (() => {
 })();
 
 const request = (() => {
+  type TApiPaths =
+    (typeof apiServices.API_PATHS)[keyof typeof apiServices.API_PATHS];
+
   class Request {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://orange-cooks-relate.loca.lt";
+      this.#serverOrigin = "https://polite-times-jam.loca.lt";
     }
 
-    get(path = "") {
+    get(path: TApiPaths) {
       UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`);
     }
     // throw a compiler error if the string start with "/"
-    post<TData extends object>(payload: TData, path: string) {
+    post<TData extends object>(payload: TData, path: TApiPaths) {
       try {
         const payloadValsStringified = Object.entries(payload).reduce(
           (ObjAccumulated, keyAndVal) => {

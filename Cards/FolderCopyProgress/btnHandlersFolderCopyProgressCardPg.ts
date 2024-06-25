@@ -30,12 +30,20 @@ function handleRefreshCopyJobResultsBtnClick(event: IGScriptAppEvent) {
     return;
   }
 
-  const { status } = apiServices.getCopyFolderJobResult(copyFolderJobId);
+  const { status, copy_folder_job_total_time_ms } =
+    apiServices.getCopyFolderJobResult(copyFolderJobId);
   event.parameters = {
     ...event.parameters,
     folderCopyStatus: status,
     cardUpdateMethod: "update",
   };
+
+  if (copy_folder_job_total_time_ms) {
+    event.parameters = {
+      ...event.parameters,
+      copyFolderJobTimeCompletionMs: copy_folder_job_total_time_ms.toString(),
+    };
+  }
 
   return renderCopyFolderProgressCard(event);
 }
