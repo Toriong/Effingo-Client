@@ -3,9 +3,107 @@
 // We will immediately delete this job once its done.
 // Back To Home (button)
 
-function renderCopyFolderProgressCardPgUpdated() {}
+function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
+  const card = CardService.newCardBuilder();
+  const foldersSelected: TFoldersToCopyInfo | null =
+    GLOBAL_FNS.getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
 
-function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
+  if (
+    !foldersSelected ||
+    !event.parameters ||
+    !event.parameters.folderToCopyId ||
+    !foldersSelected[event.parameters.folderToCopyId] ||
+    !event.parameters.folderNameToCopy ||
+    !event.parameters.folderCopyStatus
+  ) {
+    return;
+  }
+
+  const {
+    folderNameToCopy,
+    folderToCopyId,
+    folderCopyStatus,
+    txtIsCopyingOnlyFolders,
+    txtIsCopyingTheSamePermissions,
+    copyFolderJobId,
+  } = event.parameters;
+
+  const folderCopyJobInfo = foldersSelected[folderToCopyId];
+  const cardHeader = CardService.newCardHeader()
+    .setTitle("Folder Copy Results")
+    .setImageUrl(IMGS.COPY_ICON);
+  const folderToCopy = CardService.newTextParagraph().setText(
+    `<b>Folder To Copy</b>: ${folderNameToCopy}`
+  );
+  const folderCopyDestination = CardService.newTextParagraph().setText(
+    `<b>Folder Copy Destination</b>: ${folderCopyJobInfo.copyDestinationFolderName}`
+  );
+  const statusTxt = CardService.newTextParagraph().setText(
+    `Status: ${folderCopyStatus}`
+  );
+  const txtParagraphIsCopyingOnlyFolders =
+    CardService.newTextParagraph().setText(
+      `Copying only the folders?   ${txtIsCopyingOnlyFolders ?? "unknown"}`
+    );
+  const txtParagraphIsCopyingTheSamePermissions =
+    CardService.newTextParagraph().setText(
+      `Copying the same permissions?   ${
+        txtIsCopyingTheSamePermissions ?? "unknown"
+      }`
+    );
+  const lastRefreshTxt = CardService.newTextParagraph();
+
+  const folderCopyJobDescriptionSec = CardService.newCardSection();
+  const deleteWhenDoneBtnAction = CardService.newAction()
+    .setFunctionName("handleFolderCopyAbortJobBtnClick")
+    .setParameters({
+      copyFolderJobId: copyFolderJobId,
+    });
+  const deleteWhenDoneBtn = CardService.newTextButton()
+    .setText("DELETE WHEN DONE")
+    .setBackgroundColor(COLORS.WARNING_ORANGE)
+    .setOnClickAction(deleteWhenDoneBtnAction);
+  const refreshCopyJobResultsBtnAction = CardService.newAction()
+    .setFunctionName("renderCopyFolderProgressCardPgUpdated")
+    .setParameters({
+      copyFolderJobId: copyFolderJobId,
+    });
+  const refreshCopyJobResultsBtn = CardService.newTextButton()
+    .setText("REFRESH")
+    .setBackgroundColor(COLORS.SMOKEY_GREY)
+    .setOnClickAction(refreshCopyJobResultsBtnAction);
+  const btnSet = CardService.newButtonSet()
+    .addButton(refreshCopyJobResultsBtn)
+    .addButton(deleteWhenDoneBtn);
+  const copyFolderJobDescriptionBtnsSec =
+    CardService.newCardSection().addWidget(btnSet);
+
+  folderCopyJobDescriptionSec
+    .addWidget(folderToCopy)
+    .addWidget(folderCopyDestination)
+    .addWidget(txtParagraphIsCopyingOnlyFolders)
+    .addWidget(txtParagraphIsCopyingTheSamePermissions)
+    .addWidget(statusTxt);
+
+  if (lastRefreshTxt) {
+    folderCopyJobDescriptionSec.addWidget(lastRefreshTxt);
+  }
+
+  card
+    .setHeader(cardHeader)
+    .addSection(folderCopyJobDescriptionSec)
+    .addSection(copyFolderJobDescriptionBtnsSec);
+
+  const nav = CardService.newNavigation().pushCard(card.build());
+  const actionResponse =
+    CardService.newActionResponseBuilder().setNavigation(nav);
+
+  return actionResponse.build();
+}
+
+function renderCopyFolderProgressCardPgWithErrorHandling(
+  event: IGScriptAppEvent
+) {
   const card = CardService.newCardBuilder();
   const foldersSelected =
     GLOBAL_FNS.getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
@@ -86,6 +184,7 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
     return actionResponse.build();
   }
 
+  // PUT THIS INTO A FUNCTION TO render the card again with the status updated
   const cardHeader = CardService.newCardHeader()
     .setTitle("Folder Copy Results")
     .setImageUrl(IMGS.COPY_ICON);
@@ -111,15 +210,13 @@ function renderCopyFolderProgressCardPg(event: IGScriptAppEvent) {
   const lastRefreshTxt = CardService.newTextParagraph();
 
   const folderCopyJobDescriptionSec = CardService.newCardSection();
-  // send a request to the server, get the id of the folder copy job, insert the following:
-  // wasAborted: true
   const deleteWhenDoneBtnAction = CardService.newAction()
     .setFunctionName("handleFolderCopyAbortJobBtnClick")
     .setParameters({
       copyFolderJobId: startCopyJobResponseResult.copyFolderJobId,
     });
   const deleteWhenDoneBtn = CardService.newTextButton()
-    .setText("ABORT JOB")
+    .setText("DELETE WHEN DONE")
     .setBackgroundColor(COLORS.WARNING_ORANGE)
     .setOnClickAction(deleteWhenDoneBtnAction);
   const refreshCopyJobResultsBtnAction = CardService.newAction()

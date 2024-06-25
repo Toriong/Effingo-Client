@@ -85,7 +85,7 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     folderNameToCopy: selectedFolder.title,
   };
   const copyFolderAction = CardService.newAction()
-    .setFunctionName("renderCopyFolderProgressCardPg")
+    .setFunctionName("renderCopyFolderProgressCardPgWithErrorHandling")
     .setParameters(parameters);
   const copyFolderTxtBtn = CardService.newTextButton()
     .setOnClickAction(copyFolderAction)

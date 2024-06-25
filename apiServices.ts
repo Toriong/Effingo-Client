@@ -1,6 +1,6 @@
 const apiServices = (() => {
   const API_PATHS = {
-    copyFolders: "copy-files",
+    startCopyFolderJob: "start-copy-folder-job",
   } as const;
 
   function getGdriveItems<TData>(
@@ -104,7 +104,7 @@ const apiServices = (() => {
       };
       const responseResult = request.post(
         { ...reqBody },
-        `/${API_PATHS.copyFolders}`
+        `/${API_PATHS.startCopyFolderJob}`
       );
 
       if (responseResult.errMsg) {
