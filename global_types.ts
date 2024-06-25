@@ -18,6 +18,12 @@ interface ICopyDestinationFolder {
   willCopyStructureOnly: boolean;
   willCopyPermissions: boolean;
 }
+type TMakeRequire<
+  TObj extends object,
+  TKeyName extends string | symbol
+> = TKeyName extends keyof TObj
+  ? TObj & { [key in TKeyName]-?: TObj[TKeyName] }
+  : never;
 type TGdriveItemTypes = "application/vnd.google-apps.folder";
 type TFoldersToCopyInfo = Record<string, ICopyDestinationFolder>;
 type TGdriveItemsFromServer = {
@@ -26,7 +32,11 @@ type TGdriveItemsFromServer = {
   mime_type: string;
   parents: string[];
 };
-type TFolderCopyStatus = "ongoing" | "success" | "failure";
+type TFolderCopyStatus =
+  | "ongoing"
+  | "success"
+  | "failure"
+  | "UNABLE TO RETRIEVE STATUS";
 type TSetParametersArg = Partial<
   Record<keyof TUserProperties | TParameterKeys, string>
 >;
@@ -54,6 +64,7 @@ interface IParameters {
   folderNameToCopy: string;
   txtIsCopyingOnlyFolders: TYesOrNo;
   copyFolderJobId: string;
+  cardUpdateMethod: "push" | "update";
 }
 type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys
@@ -97,6 +108,13 @@ type TParameterKeys =
   | "folderToCopyErrMsg"
   | keyof TAvailableParametersForHandlerFn
   | keyof ICopyDestinationFolder;
+
+// create a typescript type that will make all of the non-string types into a string
+// for the keys in TParameterKeys if they are in TAvailableParametersForHandlerFn, then gets its data type value
+// -if its date type value is a string type then return that type, else, return string
+type TMakeValsIntoString<TData extends object> = {
+  [key in keyof TData]: TData[key] extends string ? TData[key] : string;
+};
 type TParameters = Partial<{ [key in TParameterKeys]: string }>;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
   clientPlatform: string;

@@ -8,17 +8,6 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
   const foldersSelected: TFoldersToCopyInfo | null =
     GLOBAL_FNS.getUserPropertyParsed<TFoldersToCopyInfo>("foldersToCopyInfo");
 
-  if (
-    !foldersSelected ||
-    !event.parameters ||
-    !event.parameters.folderToCopyId ||
-    !foldersSelected[event.parameters.folderToCopyId] ||
-    !event.parameters.folderNameToCopy ||
-    !event.parameters.folderCopyStatus
-  ) {
-    return;
-  }
-
   const {
     folderNameToCopy,
     folderToCopyId,
@@ -26,7 +15,8 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     txtIsCopyingOnlyFolders,
     txtIsCopyingTheSamePermissions,
     copyFolderJobId,
-  } = event.parameters;
+    cardUpdateMethod,
+  } = event.parameters as TMakeRequire<TParameters, "cardUpdateMethod">;
 
   const folderCopyJobInfo = foldersSelected[folderToCopyId];
   const cardHeader = CardService.newCardHeader()
@@ -94,6 +84,8 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     .addSection(folderCopyJobDescriptionSec)
     .addSection(copyFolderJobDescriptionBtnsSec);
 
+  if (cardUpdateMethod === "") {
+  }
   const nav = CardService.newNavigation().pushCard(card.build());
   const actionResponse =
     CardService.newActionResponseBuilder().setNavigation(nav);

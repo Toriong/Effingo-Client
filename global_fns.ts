@@ -101,11 +101,21 @@ const request = (() => {
       UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`);
     }
     // throw a compiler error if the string start with "/"
-    post(payload: { [key: string]: string }, path = "") {
+    post<TData extends object>(payload: TData, path: string) {
       try {
+        const payloadValsStringified = Object.entries(payload).reduce(
+          (ObjAccumulated, keyAndVal) => {
+            const [key, val] = keyAndVal;
+            const valUpdated =
+              typeof val === "string" ? val : JSON.stringify(val);
+
+            return Object.assign(ObjAccumulated, { [key]: valUpdated });
+          },
+          {} as { [key: string]: string }
+        );
         const response = UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`, {
           method: "post",
-          payload,
+          payload: payloadValsStringified,
         });
         const responseCode = response.getResponseCode();
         const contextTxt = response.getContentText();

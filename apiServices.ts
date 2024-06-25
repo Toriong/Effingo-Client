@@ -1,7 +1,71 @@
 const apiServices = (() => {
+  interface ISendCopyFolderReqBody {
+    folder_copy_procedure_id: string;
+    access_token: string;
+    copy_to_folder_id: string;
+    folder_id_to_copy_from: string;
+    name_of_folder_to_create: string;
+    copy_from_folder_name: string;
+    date_of_copy: string;
+    recipient_email: string;
+    recipient_email_greetings_name: string;
+    copy_destination_folder_name: string;
+  }
+  interface IGetCopyFolderJobResultReqBody {
+    copy_folder_job_id: string;
+    will_get_status_only: boolean;
+    will_skip_cache_query: boolean;
+    will_query_db_if_job_not_present_in_cache: boolean;
+  }
+  interface ICopyFolderJobResult {
+    status: TFolderCopyStatus;
+    copyGdriveItemsResults?: { [key: string]: string }[];
+  }
+  type ISendCopyFolderReqReturnVal = {
+    copyFolderJobId?: string;
+    copyFolderJobStatus:
+      | "attemptingToSendCopyFolderJobReq"
+      | "failedToSendCopyFolderReq";
+    errMsg?: string;
+  };
+
   const API_PATHS = {
     startCopyFolderJob: "start-copy-folder-job",
+    getCopyFolderJobResults: "get-copy-folder-job-result",
   } as const;
+
+  function getCopyFolderJobResult(
+    copyFolderJobId: string,
+    willGetStatusOnly = false,
+    willSkipCacheQuery = false,
+    willQueryDbIfJobIsntCache = false
+  ): ICopyFolderJobResult {
+    // the id of the copy folder job, will_get_status_only will be set to true
+    // create fn a api service that will send a request to your server that will get the status
+    // call it getCopyFolderJobStatus
+    // -it will return one of the following strings: "ongoing" | "succes" | "failure" | "statusRetrievalFailure"
+    // -or if the dev wants all of the results then return the array that contains all of the results of the copying of the gdrive item
+    const reqBody: IGetCopyFolderJobResultReqBody = {
+      copy_folder_job_id: copyFolderJobId,
+      will_get_status_only: willGetStatusOnly,
+      will_skip_cache_query: willSkipCacheQuery,
+      will_query_db_if_job_not_present_in_cache: willQueryDbIfJobIsntCache,
+    };
+    const responseBody = request.post(
+      { ...reqBody },
+      API_PATHS.getCopyFolderJobResults
+    );
+
+    if (
+      responseBody.errMsg ||
+      (responseBody.parsableData &&
+        !GLOBAL_FNS.getIsParsable(responseBody.parsableData))
+    ) {
+      return { status: "UNABLE TO RETRIEVE STATUS" };
+    }
+
+    return JSON.parse(responseBody.parsableData) as ICopyFolderJobResult;
+  }
 
   function getGdriveItems<TData>(
     parentFolderId = "root",
@@ -46,27 +110,6 @@ const apiServices = (() => {
       return { errMsg };
     }
   }
-
-  interface ISendCopyFolderReqBody {
-    access_token: string;
-    folder_id_to_copy_from: string;
-    copy_to_folder_id: string;
-    name_of_folder_to_create: string;
-    folder_copy_procedure_id: string;
-    copy_from_folder_name: string;
-    date_of_copy: string;
-    recipient_email: string;
-    recipient_email_greetings_name: string;
-    copy_destination_folder_name: string;
-  }
-
-  type ISendCopyFolderReqReturnVal = {
-    copyFolderJobId?: string;
-    copyFolderJobStatus:
-      | "attemptingToSendCopyFolderJobReq"
-      | "failedToSendCopyFolderReq";
-    errMsg?: string;
-  };
 
   /**
    * @param copyDestinationFolderName - Pass the name of the folder to copy the content to. This folder will be either created on the server or has been created
@@ -142,5 +185,6 @@ const apiServices = (() => {
   return {
     getGdriveItems,
     sendCopyFolderReq,
+    getCopyFolderJobResult,
   };
 })();
