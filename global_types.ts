@@ -9,7 +9,6 @@ type TSelectedItemsProperty = Record<
 >;
 type TUserPropertiesBoolKeys =
   | "isOnItemSelectedResultPg"
-  | "hasIsOnItemSelectedResultPgBeenSet"
   | "isChangingTheCopyFolderDestination";
 type TUserPropertiesBoolProperties = Record<TUserPropertiesBoolKeys, boolean>;
 interface ICopyDestinationFolder {
@@ -100,7 +99,6 @@ type TParameterKeys =
   | "headerTxt"
   | "gdriveItemNamesParsable"
   | "copyDestinationFolderName"
-  | "hasIsOnItemSelectedResultPgBeenSet"
   | "parentFolderId"
   | "gdriveNextPageToken"
   | "selectedParentFolderId"
@@ -108,19 +106,32 @@ type TParameterKeys =
   | "folderToCopyErrMsg"
   | keyof TAvailableParametersForHandlerFn
   | keyof ICopyDestinationFolder;
-
+type TStrValTypeParmetersKeyNames =
+  | "headerTxt"
+  | "gdriveItemNamesParsable"
+  | "copyDestinationFolderName"
+  | "parentFolderId"
+  | "gdriveNextPageToken"
+  | "selectedParentFolderId"
+  | "willUpdateCard"
+  | "folderToCopyErrMsg";
+type TStrValTypeParameters = Record<TStrValTypeParmetersKeyNames, string>;
+interface TParametersMerged
+  extends TAvailableParametersForHandlerFn,
+    ICopyDestinationFolder,
+    TStrValTypeParameters {}
 // create a typescript type that will make all of the non-string types into a string
 // for the keys in TParameterKeys if they are in TAvailableParametersForHandlerFn, then gets its data type value
 // -if its date type value is a string type then return that type, else, return string
-type TMakeValsIntoString<TData extends object> = {
+type TMakeTypeValsIntoStr<TData extends object> = {
   [key in keyof TData]: TData[key] extends string ? TData[key] : string;
 };
-type TParameters = Partial<{ [key in TParameterKeys]: string }>;
+type TParameters = TMakeTypeValsIntoStr<TParametersMerged>;
 interface IGScriptAppEvent extends IUserLocaleAndHostApp {
   clientPlatform: string;
   commonEventObject: ICommonEventObject;
   userTimezone: ITimeZone;
   userCountry: string;
   drive: IDrive;
-  parameters?: TParameters;
+  parameters?: TMakeTypeValsIntoStr<TParametersMerged>;
 }

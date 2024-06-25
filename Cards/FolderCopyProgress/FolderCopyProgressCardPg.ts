@@ -16,7 +16,7 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     txtIsCopyingTheSamePermissions,
     copyFolderJobId,
     cardUpdateMethod,
-  } = event.parameters as TMakeRequire<TParameters, "cardUpdateMethod">;
+  } = event.parameters;
 
   const folderCopyJobInfo = foldersSelected[folderToCopyId];
   const cardHeader = CardService.newCardHeader()
@@ -84,8 +84,14 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     .addSection(folderCopyJobDescriptionSec)
     .addSection(copyFolderJobDescriptionBtnsSec);
 
-  if (cardUpdateMethod === "") {
+  if (cardUpdateMethod === "update") {
+    const nav = CardService.newNavigation().updateCard(card.build());
+    const actionResponse =
+      CardService.newActionResponseBuilder().setNavigation(nav);
+
+    return actionResponse.build();
   }
+
   const nav = CardService.newNavigation().pushCard(card.build());
   const actionResponse =
     CardService.newActionResponseBuilder().setNavigation(nav);

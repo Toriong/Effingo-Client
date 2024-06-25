@@ -94,7 +94,7 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://crazy-phones-follow.loca.lt";
+      this.#serverOrigin = "https://orange-cooks-relate.loca.lt";
     }
 
     get(path = "") {
