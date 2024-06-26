@@ -97,7 +97,7 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://polite-times-jam.loca.lt";
+      this.#serverOrigin = "https://three-tools-drop.loca.lt";
     }
 
     get(path: TApiPaths) {

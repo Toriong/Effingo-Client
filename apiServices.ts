@@ -34,6 +34,8 @@ const apiServices = (() => {
     startCopyFolderJob: "/start-copy-folder-job",
     getCopyFolderJobResults: "/get-copy-folder-job-result",
     getGdriveItems: "/get-gdrive-items",
+    copyFolder: "/copy-files",
+    main: "/",
   } as const;
 
   function getCopyFolderJobResult(
@@ -149,13 +151,11 @@ const apiServices = (() => {
       };
       const responseResult = request.post(
         { ...reqBody },
-        API_PATHS.startCopyFolderJob
+        "/start-copy-folder-job"
       );
 
       if (responseResult.errMsg) {
-        throw new Error(
-          `Failed to get the gdrive items of the target folder. Error message from server: ${responseResult.errMsg}`
-        );
+        throw new Error(`Error message from server: ${responseResult.errMsg}`);
       }
 
       if (
@@ -179,7 +179,9 @@ const apiServices = (() => {
     } catch (error) {
       return {
         copyFolderJobStatus: "failedToSendCopyFolderReq",
-        errMsg: `Failed to start the folder copy job. Error message: ${error}`,
+        errMsg:
+          error.message ??
+          "Failed to start the copy job for the target folder.",
       };
     }
   }

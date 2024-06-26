@@ -32,7 +32,7 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
   const copyDestinationFolderTxt =
     copyDestinationFolderName ?? `My Drive/${selectedFolder.title} COPY`;
   const copyDestinationFolderTxtWidget = CardService.newTextParagraph().setText(
-    `Copy Folder Destination: <i>${copyDestinationFolderTxt}</i>`
+    `<b>Copy Folder Destination</b>: <i>${copyDestinationFolderTxt}</i>`
   );
   const copyFolderOpt = CardService.newTextParagraph().setText(
     "<b><u>Copy Folder Options</u></b>"
@@ -59,6 +59,7 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setOnClickAction(resetCopyFolderDestinationBtnAction);
 
   cardServiceOptionsTxtSec
+    .addWidget(selectedFolderToCopyTxtWidget)
     .addWidget(copyDestinationFolderTxtWidget)
     .addWidget(copyFolderDestinationBtn)
     .addWidget(resetCopyFolderDestinationBtn);
@@ -110,7 +111,6 @@ function renderSelectGdriveItemCardPg(event: IGScriptAppEvent) {
     .setImageUrl(IMGS.TOOLS);
 
   copyFolderCardSection
-    .addWidget(selectedFolderToCopyTxtWidget)
     .addWidget(includeTheSamePermissionsSwitch)
     .addWidget(copyOnlyFoldersSwitch)
     .addWidget(copyFolderTxtBtn);

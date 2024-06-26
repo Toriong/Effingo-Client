@@ -34,7 +34,9 @@ function handleRefreshCopyJobResultsBtnClick(event: IGScriptAppEvent) {
     apiServices.getCopyFolderJobResult(copyFolderJobId);
   event.parameters = {
     ...event.parameters,
-    folderCopyStatus: status,
+    folderCopyStatus:
+      (status.toUpperCase() as TFolderCopyStatus) ??
+      "UNABLE TO RETRIEVE STATUS",
     cardUpdateMethod: "update",
   };
 

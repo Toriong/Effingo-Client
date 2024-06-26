@@ -242,63 +242,6 @@ const HomeCards = (() => {
       .addSection(currentJobsSec)
       .setFixedFooter(footer)
       .build();
-    const reviewAndFeedbackHeader = createHeader(
-      "Feedback & Review",
-      "",
-      "",
-      SQUARE,
-      ""
-    );
-    const reviewAndFeedbackTitleCard = CardService.newCardBuilder()
-      .setHeader(reviewAndFeedbackHeader)
-      .build();
-    const feedbackHeader = createHeader(
-      "Feedback",
-      IMGS.FEEDBACK_ICON,
-      "subscription_icon",
-      SQUARE,
-      "Give us feedback or contact us. We want to improve!"
-    );
-    const reviewHeader = createHeader(
-      "Review",
-      IMGS.FIVE_STAR_ICON,
-      "review_icon",
-      SQUARE,
-      "Give us a rating 👍!"
-    );
-    const reviewCard = CardService.newCardBuilder()
-      .setHeader(reviewHeader)
-      .build();
-    const feedbackCard = CardService.newCardBuilder()
-      .setHeader(feedbackHeader)
-      .build();
-    const titleHeaderForSubscriptionSec = createHeader(
-      "Subscription",
-      "",
-      "",
-      SQUARE,
-      ""
-    );
-    const titleCardForSubscriptionSec = CardService.newCardBuilder()
-      .setHeader(titleHeaderForSubscriptionSec)
-      .build();
-    const subscriptionSecHeader = createHeader(
-      "Your Subscription",
-      IMGS.SUBSCRIPTION_ICON,
-      "SUBSCRIPTION_ICON",
-      SQUARE,
-      "View or update your subscription."
-    );
-    const subscriptionSecCard = CardService.newCardBuilder()
-      .setHeader(subscriptionSecHeader)
-      .build();
-    const subscriptionVals = [titleCardForSubscriptionSec, subscriptionSecCard];
-    const feedbackAndReview = [
-      reviewAndFeedbackTitleCard,
-      feedbackCard,
-      reviewCard,
-    ];
-    const toolsCards = createToolCards();
 
     return permissionsAndFolderCopyCard;
   }

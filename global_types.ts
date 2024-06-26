@@ -31,11 +31,10 @@ type TGdriveItemsFromServer = {
   mime_type: string;
   parents: string[];
 };
-type TFolderCopyStatus =
-  | "ongoing"
-  | "success"
-  | "failure"
-  | "UNABLE TO RETRIEVE STATUS";
+
+type TFolderCopyStatus = Uppercase<
+  "ongoing" | "success" | "failure" | "UNABLE TO RETRIEVE STATUS"
+>;
 type TSetParametersArg = Partial<
   Record<keyof TUserProperties | TParameterKeys, string>
 >;

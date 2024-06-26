@@ -30,7 +30,7 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
     `<b>Folder Copy Destination</b>: ${folderCopyJobInfo.copyDestinationFolderName}`
   );
   const statusTxt = CardService.newTextParagraph().setText(
-    `Status: ${folderCopyStatus}`
+    `Status: ${folderCopyStatus.toUpperCase()}`
   );
   const txtParagraphIsCopyingOnlyFolders =
     CardService.newTextParagraph().setText(
@@ -60,7 +60,8 @@ function renderCopyFolderProgressCard(event: IGScriptAppEvent) {
       copyFolderJobId: copyFolderJobId,
       folderToCopyId,
       folderNameToCopy,
-      folderCopyStatus: folderCopyStatus ?? "UNABLE TO RETRIEVE STATUS",
+      folderCopyStatus:
+        folderCopyStatus.toUpperCase() ?? "UNABLE TO RETRIEVE STATUS",
       txtIsCopyingTheSamePermissions,
       txtIsCopyingOnlyFolders,
     });
@@ -208,7 +209,7 @@ function renderCopyFolderProgressCardPgWithErrorHandling(
     `<b>Folder Copy Destination</b>: ${folderCopyJobInfo.copyDestinationFolderName}`
   );
   const statusTxt = CardService.newTextParagraph().setText(
-    `Status: ${folderCopyStatus}`
+    `Status: ${folderCopyStatus.toUpperCase()}`
   );
   const txtParagraphIsCopyingOnlyFolders =
     CardService.newTextParagraph().setText(
