@@ -97,14 +97,14 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://three-tools-drop.loca.lt";
+      this.#serverOrigin = "https://97aad8dddf06b1.lhr.life";
     }
 
     get(path: TApiPaths) {
       UrlFetchApp.fetch(`${this.#serverOrigin}/${path}`);
     }
     // throw a compiler error if the string start with "/"
-    post<TData extends object>(payload: TData, path: TApiPaths) {
+    post<TData extends object>(payload: TData, path: TApiPaths = "/") {
       try {
         const payloadValsStringified = Object.entries(payload).reduce(
           (ObjAccumulated, keyAndVal) => {

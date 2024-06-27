@@ -186,6 +186,14 @@ const apiServices = (() => {
     }
   }
 
+  // will take the following as parameters:
+  // the folder id
+  // the id of the folder cache
+  // gdrive access token
+
+  // will return the new id of the cached folder or it will be stored into the target folder object in the UserProperytService object
+  function cacheFolderStructureOnFolder() {}
+
   return {
     getGdriveItems,
     sendCopyFolderReq,

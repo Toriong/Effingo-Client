@@ -1,4 +1,6 @@
 function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
+  const { getIsParsable } = GLOBAL_FNS;
+
   if (
     !event.parameters?.selectedFolderToCopyParsable ||
     !getIsParsable(event.parameters?.selectedFolderToCopyParsable)

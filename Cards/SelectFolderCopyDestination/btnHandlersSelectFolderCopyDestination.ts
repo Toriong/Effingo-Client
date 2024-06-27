@@ -15,6 +15,7 @@ function handleSelectFolderBtnClick(event: IGScriptAppEvent) {
     return;
   }
 
+  const { getUserPropertyParsed, setUserProperty } = GLOBAL_FNS;
   const selectedFolderToCopy = JSON.parse(
     selectedFolderToCopyParsable
   ) as ISelectedItem;
@@ -80,7 +81,3 @@ function handleSeeMoreBtnClick(event: Required<IGScriptAppEvent>) {
 
   // after adding the new items received from the server set the parameters of the event object that will be passed in for the
 }
-
-function addSectionsToFolderCard(
-  folderCard: GoogleAppsScript.Card_Service.CardBuilder
-) {}

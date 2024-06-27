@@ -184,7 +184,7 @@ function renderCopyFolderProgressCardPgWithErrorHandling(
     !startCopyJobResponseResult?.copyFolderJobId
   ) {
     const errMsg = startCopyJobResponseResult.errMsg
-      ? `Sorry we're unable to start the copy job for this folder. Reason: ${startCopyJobResponseResult.errMsg}.`
+      ? `Sorry we're unable to start the copy job for this folder.<br>Reason: ${startCopyJobResponseResult.errMsg}.`
       : "Sorry we're unable to satrt the copy job for this folder. Please try again.";
     const errMsgTxt = CardService.newTextParagraph().setText(errMsg);
     const section = CardService.newCardSection().addWidget(errMsgTxt);
