@@ -126,7 +126,7 @@ const apiServices = (() => {
     folderToCopyName: string,
     copyDestinationFolderName: string,
     nameOfFolderToCreate: string,
-    copyToFolderId?: string
+    copyToFolderId = ""
   ): ISendCopyFolderReqReturnVal {
     try {
       const userEmail = Session.getActiveUser().getEmail();
@@ -139,7 +139,7 @@ const apiServices = (() => {
       });
       const reqBody: ISendCopyFolderReqBody = {
         copy_destination_folder_name: copyDestinationFolderName,
-        copy_to_folder_id: copyToFolderId ?? "",
+        copy_to_folder_id: copyToFolderId,
         date_of_copy: dateOfCopy,
         recipient_email: userEmail,
         recipient_email_greetings_name: emailGreetingName,
@@ -149,6 +149,7 @@ const apiServices = (() => {
         name_of_folder_to_create: nameOfFolderToCreate,
         folder_copy_procedure_id: copyFolderJobId,
       };
+
       const responseResult = request.post(
         { ...reqBody },
         "/start-copy-folder-job"

@@ -169,12 +169,14 @@ function renderCopyFolderProgressCardPgWithErrorHandling(
     return actionResponse.build();
   }
 
+  const { copyDestinationFolderId, copyDestinationFolderName } =
+    folderCopyJobInfo;
   const startCopyJobResponseResult = apiServices.sendCopyFolderReq(
     folderToCopyId,
     folderNameToCopy,
-    folderCopyJobInfo.copyDestinationFolderName,
-    folderCopyJobInfo.copyDestinationFolderName,
-    folderCopyJobInfo.copyDestinationFolderId ?? ""
+    copyDestinationFolderName,
+    copyDestinationFolderId ? "" : copyDestinationFolderName,
+    copyDestinationFolderId ?? ""
   );
 
   if (

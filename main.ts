@@ -6,8 +6,5 @@ type TRenders = keyof typeof Renders;
 const Renders = { handleHomePgRender };
 
 function handleHomePgRender() {
-  const token = ScriptApp.getOAuthToken();
-  request.post({ map: token });
-
   return HomeCards.createHomePgCards();
 }

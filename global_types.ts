@@ -120,9 +120,6 @@ interface TParametersMerged
   extends TAvailableParametersForHandlerFn,
     ICopyDestinationFolder,
     TStrValTypeParameters {}
-// create a typescript type that will make all of the non-string types into a string
-// for the keys in TParameterKeys if they are in TAvailableParametersForHandlerFn, then gets its data type value
-// -if its date type value is a string type then return that type, else, return string
 type TMakeTypeValsIntoStr<TData extends object> = {
   [key in keyof TData]: TData[key] extends string ? TData[key] : string;
 };
