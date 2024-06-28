@@ -8,18 +8,12 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 		return;
 	}
 
-	// WHAT IS HAPPENING, BUG:
-	// when all of the folders that the user can view has been retrieved from the backend
-	// -and the next page of folders are displayed to the user, and if the user goes back to the previous
-	// -page, only the first ten folders are displayed to the user
-
-	// NEXT STEPS: check how you are saving the folders into the user property service object
-
 	let {
 		gdriveNextPageToken,
 		displayedSelectableFolders: displayedSelectableFoldersStringified,
 		selectedFolderToCopyParsable,
 		cardUpdateMethod,
+		wereSelectableFoldersSeen,
 	} = event.parameters;
 	const selectedFolderToCopy = JSON.parse(
 		selectedFolderToCopyParsable,
@@ -52,6 +46,25 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 				displayedSelectableFoldersStringified,
 			) as TGdriveItemsFromServer[])
 		: [];
+
+	// GOAL: use the card that was stringified, this will be displayed to the user for the next button
+	if (
+		getIsParsable(wereSelectableFoldersSeen) &&
+		JSON.parse(wereSelectableFoldersSeen)
+	) {
+		const selectableFoldersCard =
+			helperFnsSelectFolderCopyDestination.constructSelectableCopyFolderDestinationCard(
+				displayedSelectableFolders,
+				gdriveNextPageToken,
+				selectedFolderToCopyParsable,
+				card,
+				currentIndex,
+				displayedSelectableFoldersAll.length,
+				"push",
+			);
+
+		return selectableFoldersCard;
+	}
 
 	// get the next gdrive items to be presented to the user
 	// determine if the user has reached the total amount of folders to be presented to the user

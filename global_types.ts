@@ -74,6 +74,7 @@ interface IParameters {
 	newSelectableFolderIndexPage: number;
 	hasReachedMaxSelectableFoldersForCard: boolean;
 	willNotDisplaySeeMoreFoldersBtn: boolean;
+	wereSelectableFoldersSeen: boolean;
 	indexOfSelectableCopyFolderDestinationsPg: number;
 	cardUpdateMethod: "push" | "update" | "popAndUpdate";
 }
