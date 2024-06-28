@@ -38,6 +38,13 @@ type TFolderCopyStatus = Uppercase<
 type TSetParametersArg = Partial<
   Record<keyof TUserProperties | TParameterKeys, string>
 >;
+type TTargetSelectableFolder = {
+  displayedSelectableFoldersAll: TGdriveItemsFromServer[][];
+  currentIndex: number;
+};
+interface TSelectableCopyFolderDestinations {
+  [key: string]: TTargetSelectableFolder;
+}
 /** What can be stored in the google app script property service object. */
 interface TUserProperties
   extends TSelectedItemsProperty,
@@ -49,6 +56,7 @@ interface TUserProperties
   foldersToCopyInfo: TFoldersToCopyInfo;
   txtIsCopyingOnlyFolders: string;
   txtIsCopyingTheSamePermissions: TYesOrNo;
+  selectableCopyFolderDestinations: TSelectableCopyFolderDestinations;
 }
 type TYesOrNo = "Yes" | "No";
 /**
@@ -62,7 +70,11 @@ interface IParameters {
   folderNameToCopy: string;
   txtIsCopyingOnlyFolders: TYesOrNo;
   copyFolderJobId: string;
-  cardUpdateMethod: "push" | "update";
+  newSelectableFolderIndexPage: number;
+  hasReachedMaxSelectableFoldersForCard: boolean;
+  willNotDisplaySeeMoreFoldersBtn: boolean;
+  indexOfSelectableCopyFolderDestinationsPg: number;
+  cardUpdateMethod: "push" | "update" | "popAndUpdate";
 }
 type TAvailableParametersForHandlerFn = IParameters & TUserProperties;
 type TDynamicCacheVal<TData> = TData extends TUserPropertyKeys

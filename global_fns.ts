@@ -97,7 +97,7 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://fifty-spies-sneeze.loca.lt";
+      this.#serverOrigin = "https://yellow-trees-doubt.loca.lt";
     }
 
     get(path: TApiPaths) {

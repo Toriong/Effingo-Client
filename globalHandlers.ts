@@ -8,11 +8,14 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
       ? copyFoldersInfo
       : {};
   let copyFolderDestinationName = `${event.drive.activeCursorItem?.title} COPY`;
+
   if (
     copyFoldersInfo &&
     event.drive.activeCursorItem?.id &&
     copyFoldersInfo[event.drive.activeCursorItem.id]
   ) {
+    // the user has already selected the copy folder destination
+    // present the name of the copy folder destination
     copyFolderDestinationName =
       copyFoldersInfo[event.drive.activeCursorItem.id]
         .copyDestinationFolderName;
@@ -20,6 +23,7 @@ function handleOnDriveItemsSelected(event: IGScriptAppEvent) {
     event.drive.activeCursorItem?.id &&
     !copyFoldersInfo[event.drive.activeCursorItem.id]
   ) {
+    // the user has not selected the copy folder destination
     const folderCopyDestination = {
       [event.drive.activeCursorItem.id]: {
         copyDestinationFolderName: copyFolderDestinationName,
