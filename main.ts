@@ -6,5 +6,8 @@ type TRenders = keyof typeof Renders;
 const Renders = { handleHomePgRender };
 
 function handleHomePgRender() {
+  // GLOBAL_FNS.deleteUserProperties(["selectableCopyFolderDestinations"]);
+  GLOBAL_FNS.resetUserProperties();
+
   return HomeCards.createHomePgCards();
 }

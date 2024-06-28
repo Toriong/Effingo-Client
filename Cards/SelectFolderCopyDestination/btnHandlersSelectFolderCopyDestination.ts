@@ -1,69 +1,59 @@
 function handlePrevBtnClick(event: IGScriptAppEvent) {
-  if (!event.parameters) {
+  if (!event.parameters || !event.parameters.folderToCopyId) {
     return;
   }
 
-  const { getUserPropertyParsed, getIsParsable } = GLOBAL_FNS;
-  const { cardUpdateMethod, selectedFolderToCopyParsable } = event.parameters;
-
-  if (!cardUpdateMethod || !selectedFolderToCopyParsable) {
-    return;
-  }
-
-  if (!getIsParsable(selectedFolderToCopyParsable)) {
-    return;
-  }
-
-  const selectedFolderToCopy = JSON.parse(
-    selectedFolderToCopyParsable
-  ) as ISelectedItem;
+  const { getUserPropertyParsed, setUserProperty } = GLOBAL_FNS;
   const selectableCopyFolderDestinations =
     getUserPropertyParsed<TSelectableCopyFolderDestinations>(
       "selectableCopyFolderDestinations"
     );
-  const selectedCopyFolderDestinationsForTargetFolder =
-    selectableCopyFolderDestinations[selectedFolderToCopy.id];
+  const selectableFolderCopyDestination =
+    selectableCopyFolderDestinations[event.parameters.folderToCopyId];
 
-  if (!selectedCopyFolderDestinationsForTargetFolder) {
+  if (!selectableFolderCopyDestination) {
     return;
   }
 
-  const { displayedSelectableFoldersAll, currentIndex } =
-    selectedCopyFolderDestinationsForTargetFolder;
+  selectableFolderCopyDestination.currentIndex -= 1;
 
-  if (currentIndex - 1 < 0) {
-    return;
-  }
-
-  const targetSelectableFolders =
-    displayedSelectableFoldersAll[currentIndex - 1];
-
-  request.post({
-    map: JSON.stringify({
-      yo: targetSelectableFolders.length,
-      sup: selectedCopyFolderDestinationsForTargetFolder,
-    }),
+  setUserProperty("selectableCopyFolderDestinations", {
+    ...selectableCopyFolderDestinations,
+    [event.parameters.folderToCopyId]: selectableFolderCopyDestination,
   });
 
-  event.parameters = {
-    displayedSelectableFolders: JSON.stringify(targetSelectableFolders),
-    selectedFolderToCopyParsable,
-    willNotDisplaySeeMoreFoldersBtn: JSON.stringify(true),
-    cardUpdateMethod: "popAndUpdate",
-  };
+  const nav = CardService.newNavigation().popCard();
+  const actionResponse =
+    CardService.newActionResponseBuilder().setNavigation(nav);
 
-  return renderSelectCopyFolderDestinationCardPg(event);
+  return actionResponse.build();
+}
 
-  // GOAL: get the previous page of the copy folder destination to be shown to the user
+// NOTES:
+//
 
-  // GOAL: disable the previous card page of folders to be displayed to the user
+// CASE: the user is on the last page cards, can get the next page of folders
+// GOAL: push a new card with the new folders retrieved from the backend
+// -
 
-  // BRAIN DUMP:
-  // this function will take new index to query all folders array
-  // will update the currentIndex field with that value
-  // get the new folders to display to the user
-  // will pass willNotDisplaySeeMoreFoldersBtn as an argument for the render function
-  // render the  page
+function handleNextFolderPgBtnClick(event: IGScriptAppEvent) {
+  if (!event.parameters || !event.parameters.folderToCopyId) {
+    return;
+  }
+
+  const { getUserPropertyParsed, setUserProperty } = GLOBAL_FNS;
+  const selectableCopyFolderDestinations =
+    getUserPropertyParsed<TSelectableCopyFolderDestinations>(
+      "selectableCopyFolderDestinations"
+    );
+  const selectableFolderCopyDestination =
+    selectableCopyFolderDestinations[event.parameters.folderToCopyId];
+
+  if (!selectableFolderCopyDestination) {
+    return;
+  }
+
+  const newCurrentIndex = selectableFolderCopyDestination.currentIndex + 1;
 }
 
 function handleSelectFolderBtnClick(event: IGScriptAppEvent) {

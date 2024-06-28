@@ -60,6 +60,20 @@ const GLOBAL_FNS = (() => {
     return JSON.parse(targetVal);
   }
 
+  function resetUserProperties() {
+    const userPropertyService = PropertiesService.getUserProperties();
+
+    userPropertyService.deleteAllProperties();
+  }
+
+  function deleteUserProperties(userPropertiesKeys: (keyof TUserProperties)[]) {
+    const userProperties = PropertiesService.getUserProperties();
+
+    for (const key of userPropertiesKeys) {
+      userProperties.deleteProperty(key);
+    }
+  }
+
   function setUserProperty<
     TDataA extends TUserPropertyKeys,
     TDataB extends TDynamicCacheVal<TDataA>
@@ -86,6 +100,8 @@ const GLOBAL_FNS = (() => {
     setUserProperty,
     getUserProperty,
     getCurrentDate,
+    resetUserProperties,
+    deleteUserProperties,
   };
 })();
 
@@ -97,7 +113,7 @@ const request = (() => {
     #serverOrigin: string;
 
     constructor() {
-      this.#serverOrigin = "https://yellow-trees-doubt.loca.lt";
+      this.#serverOrigin = "https://six-deer-fold.loca.lt";
     }
 
     get(path: TApiPaths) {

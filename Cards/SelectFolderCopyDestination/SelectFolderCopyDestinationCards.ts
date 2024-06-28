@@ -1,20 +1,6 @@
 function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
   const { getIsParsable, getUserPropertyParsed, setUserProperty } = GLOBAL_FNS;
 
-  // CASE: the user selects the See More button, and has reached the max of thirty folders to be displayed to the user
-  // GOAL: push a new card on the navigation stack with the received folders from the server, and enable the back button
-  // the new card is presented to the user
-  // the new card is push onto the navigation with the new folders to be presented to the user
-  // add the folders as sectinos for the new card
-  // get the new folders data from the server
-  // push them into the user property service in the following format: { the id of the folder to copy: [[the array of folders, its
-  // its index corresponds with the pagination number]]  }
-  // get the current folders that were presented to the user
-  // the user has reached total amount of folders for the current card (30)
-
-  // CASE: the user clicks the See More button, and has not reach the max of thiryt folders
-  // GOAL: add the new folders to be displayed to the user on the current card
-
   if (
     !event.parameters?.selectedFolderToCopyParsable ||
     !getIsParsable(event.parameters?.selectedFolderToCopyParsable)
@@ -33,7 +19,6 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     gdriveNextPageToken,
     displayedSelectableFolders: displayedSelectableFoldersStringified,
     selectedFolderToCopyParsable,
-    willNotDisplaySeeMoreFoldersBtn,
     cardUpdateMethod,
   } = event.parameters;
   const selectedFolderToCopy = JSON.parse(
@@ -49,6 +34,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
       currentIndex: 0,
       displayedSelectableFoldersAll: [],
     } as TTargetSelectableFolder);
+
   let displayedSelectableFolders = getIsParsable(
     displayedSelectableFoldersStringified
   )
@@ -56,26 +42,6 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
         displayedSelectableFoldersStringified
       ) as TGdriveItemsFromServer[])
     : [];
-  const hasReachedSelectableFoldersMaxForCard =
-    displayedSelectableFolders.length === 30;
-
-  if (hasReachedSelectableFoldersMaxForCard) {
-    selectableCopyFolderDestinationsForTargetFolder.displayedSelectableFoldersAll.push(
-      displayedSelectableFolders
-    );
-    selectableCopyFolderDestinationsForTargetFolder.currentIndex += 1;
-    selectableCopyFolderDestinations = {
-      ...selectableCopyFolderDestinations,
-      [selectedFolderToCopy.id]:
-        selectableCopyFolderDestinationsForTargetFolder,
-    };
-
-    setUserProperty(
-      "selectableCopyFolderDestinations",
-      selectableCopyFolderDestinations
-    );
-  }
-
   const headerTxtParagraph = CardService.newTextParagraph().setText(
     "<b>Select the copy destination folder: </b>"
   );
@@ -83,6 +49,8 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     CardService.newCardSection().addWidget(headerTxtParagraph);
   // get the next gdrive items to be presented to the user
   // determine if the user has reached the total amount of folders to be presented to the user
+  // CASE: there are more than 30 folders for a givene sub folder
+  // send the parentFolderId to the server to get the rest of folders for the user
   const getGdriveItemsResult = apiServices.getGdriveItems<{
     gdrive_items: TGdriveItemsFromServer[];
     gdrive_next_page_token: string;
@@ -102,7 +70,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
     !getGdriveItemsResult?.data?.gdrive_items?.length
   ) {
     const txt = CardService.newTextParagraph().setText(
-      `${getGdriveItemsResult.errMsg} yo there!` ?? "No folders are present."
+      `${getGdriveItemsResult.errMsg}` ?? "No folders are present."
     );
     const txtSection = CardService.newCardSection().addWidget(txt);
 
@@ -114,12 +82,24 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 
     return actionResponse.build();
   }
+  const { displayedSelectableFoldersAll, currentIndex } =
+    selectableCopyFolderDestinationsForTargetFolder;
 
-  if (hasReachedSelectableFoldersMaxForCard) {
-    displayedSelectableFolders = getGdriveItemsResult.data.gdrive_items;
-  } else {
-    displayedSelectableFolders.push(...getGdriveItemsResult.data.gdrive_items);
-  }
+  displayedSelectableFolders.push(...getGdriveItemsResult.data.gdrive_items);
+
+  selectableCopyFolderDestinationsForTargetFolder.displayedSelectableFoldersAll[
+    currentIndex
+  ] = displayedSelectableFolders;
+
+  selectableCopyFolderDestinations = {
+    ...selectableCopyFolderDestinations,
+    [selectedFolderToCopy.id]: selectableCopyFolderDestinationsForTargetFolder,
+  };
+
+  setUserProperty(
+    "selectableCopyFolderDestinations",
+    selectableCopyFolderDestinations
+  );
 
   for (const folder of displayedSelectableFolders) {
     const folderName = CardService.newTextParagraph().setText(folder.name);
@@ -151,10 +131,12 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 
     card.addSection(folderCardSection);
   }
+  const hasReachedSelectableFoldersMaxForCard =
+    displayedSelectableFolders.length === 30;
 
   if (
     getGdriveItemsResult.data.gdrive_next_page_token &&
-    !willNotDisplaySeeMoreFoldersBtn
+    !hasReachedSelectableFoldersMaxForCard
   ) {
     const parameters: TSetParametersArg = {
       selectedFolderToCopyParsable,
@@ -170,39 +152,31 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
       .setOnClickAction(seeMoreFolderBtnAction);
     const viewMoreFolderSection =
       CardService.newCardSection().addWidget(viewMoreFoldersBtn);
+
     card.addSection(viewMoreFolderSection);
   }
 
-  const newSelectableFolderIndexPage =
-    selectableCopyFolderDestinationsForTargetFolder.currentIndex <= 0
-      ? 0
-      : selectableCopyFolderDestinationsForTargetFolder.currentIndex - 1;
-  const handlePrevBtnParameters: Partial<TMakeTypeValsIntoStr<TParameters>> = {
-    selectedFolderToCopyParsable,
-    cardUpdateMethod: "popAndUpdate",
-    indexOfSelectableCopyFolderDestinationsPg:
-      newSelectableFolderIndexPage.toString(),
+  const btnParameters: Partial<TMakeTypeValsIntoStr<TParameters>> = {
+    folderToCopyId: selectedFolderToCopy.id,
   };
   // pop the current card, then with the new card on the stack, update it by not showing the see more button
   const prevBtnAction = CardService.newAction()
     .setFunctionName("handlePrevBtnClick")
-    .setParameters(handlePrevBtnParameters);
+    .setParameters(btnParameters);
   const prevBtn = CardService.newTextButton()
-    .setText("Prev")
+    .setText("Prev Pg")
     .setOnClickAction(prevBtnAction)
-    .setDisabled(
-      selectableCopyFolderDestinationsForTargetFolder.currentIndex == 0
-    );
-  const nextBtnClickAction = CardService.newAction()
-    .setFunctionName("handlePrevBtnClick")
-    .setParameters(handlePrevBtnParameters);
+    .setDisabled(currentIndex === 0);
+  const nextFolderPgBtnClickAction = CardService.newAction()
+    .setFunctionName("handleNextFolderPgBtnClick")
+    .setParameters(btnParameters);
   const nextBtn = CardService.newTextButton()
-    .setText("Next")
-    .setOnClickAction(nextBtnClickAction)
+    .setText("Next Pg")
+    .setOnClickAction(nextFolderPgBtnClickAction)
     .setDisabled(
-      displayedSelectableFolders.length == 0 ||
-        displayedSelectableFolders.length - 1 ==
-          selectableCopyFolderDestinationsForTargetFolder.currentIndex
+      !hasReachedSelectableFoldersMaxForCard &&
+        currentIndex === displayedSelectableFoldersAll.length - 1 &&
+        !!gdriveNextPageToken
     );
   const footer = CardService.newFixedFooter()
     .setSecondaryButton(prevBtn)
@@ -210,17 +184,8 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 
   card.setFixedFooter(footer);
 
-  if (
-    !hasReachedSelectableFoldersMaxForCard &&
-    ["update", "popAndUpdate"].includes(cardUpdateMethod)
-  ) {
-    let nav = CardService.newNavigation();
-
-    if (cardUpdateMethod === "popAndUpdate") {
-      nav = nav.popCard();
-    }
-
-    nav = nav.updateCard(card.build());
+  if (!hasReachedSelectableFoldersMaxForCard && cardUpdateMethod === "update") {
+    const nav = CardService.newNavigation().updateCard(card.build());
     const actionResponse =
       CardService.newActionResponseBuilder().setNavigation(nav);
 
