@@ -41,7 +41,6 @@ type TSetParametersArg = Partial<
 type TTargetSelectableFolder = {
 	displayedSelectableFoldersAll: TGdriveItemsFromServer[][];
 	currentIndex: number;
-	stringifiedCard: string;
 };
 interface TSelectableCopyFolderDestinations {
 	[key: string]: TTargetSelectableFolder;

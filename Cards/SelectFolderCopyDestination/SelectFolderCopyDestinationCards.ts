@@ -28,7 +28,7 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 			currentIndex: 0,
 			displayedSelectableFoldersAll: [],
 		} as TTargetSelectableFolder);
-	const { displayedSelectableFoldersAll, currentIndex, stringifiedCard } =
+	const { displayedSelectableFoldersAll, currentIndex } =
 		selectableCopyFolderDestinationsForTargetFolder;
 	const headerTxtParagraph = CardService.newTextParagraph().setText(
 		"<b>Select the copy destination folder: </b>",
@@ -38,7 +38,6 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 	const card = CardService.newCardBuilder()
 		.setName(`selectCopyFolderDestination ${currentIndex}`)
 		.addSection(headerSection);
-	const storedCard = stringifiedCard ? JSON.parse(stringifiedCard) : null;
 	const displayedSelectableFolders = getIsParsable(
 		displayedSelectableFoldersStringified,
 	)
@@ -52,16 +51,20 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 		getIsParsable(wereSelectableFoldersSeen) &&
 		JSON.parse(wereSelectableFoldersSeen)
 	) {
-		const selectableFoldersCard =
-			helperFnsSelectFolderCopyDestination.constructSelectableCopyFolderDestinationCard(
-				displayedSelectableFolders,
-				gdriveNextPageToken,
-				selectedFolderToCopyParsable,
-				card,
-				currentIndex,
-				displayedSelectableFoldersAll.length,
-				"push",
-			);
+		const { constructSelectableCopyFolderDestinationCard, addFolderSections } =
+			helperFnsSelectFolderCopyDestination;
+
+		addFolderSections(card, displayedSelectableFolders, selectedFolderToCopy);
+
+		const selectableFoldersCard = constructSelectableCopyFolderDestinationCard(
+			displayedSelectableFolders,
+			gdriveNextPageToken,
+			selectedFolderToCopyParsable,
+			card,
+			currentIndex,
+			displayedSelectableFoldersAll.length,
+			"push",
+		);
 
 		return selectableFoldersCard;
 	}
@@ -104,16 +107,6 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 	selectableCopyFolderDestinationsForTargetFolder.displayedSelectableFoldersAll[
 		currentIndex
 	] = displayedSelectableFolders;
-
-	selectableCopyFolderDestinations = {
-		...selectableCopyFolderDestinations,
-		[selectedFolderToCopy.id]: selectableCopyFolderDestinationsForTargetFolder,
-	};
-
-	setUserProperty(
-		"selectableCopyFolderDestinations",
-		selectableCopyFolderDestinations,
-	);
 
 	for (const folder of displayedSelectableFolders) {
 		const folderName = CardService.newTextParagraph().setText(folder.name);
@@ -171,6 +164,10 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 
 		card.addSection(viewMoreFolderSection);
 	}
+	selectableCopyFolderDestinations = {
+		...selectableCopyFolderDestinations,
+		[selectedFolderToCopy.id]: selectableCopyFolderDestinationsForTargetFolder,
+	};
 
 	gdriveNextPageToken = getGdriveItemsResult.data?.gdrive_next_page_token ?? "";
 	const prevBtnParameters: Partial<TMakeTypeValsIntoStr<TParameters>> = {
@@ -204,6 +201,11 @@ function renderSelectCopyFolderDestinationCardPg(event: IGScriptAppEvent) {
 		.setPrimaryButton(nextBtn);
 
 	card.setFixedFooter(footer);
+
+	setUserProperty(
+		"selectableCopyFolderDestinations",
+		selectableCopyFolderDestinations,
+	);
 
 	if (!hasReachedSelectableFoldersMaxForCard && cardUpdateMethod === "update") {
 		const nav = CardService.newNavigation().updateCard(card.build());

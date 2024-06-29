@@ -1,4 +1,43 @@
 const helperFnsSelectFolderCopyDestination = (() => {
+	function addFolderSections(
+		selectableFoldersCard: GoogleAppsScript.Card_Service.CardBuilder,
+		folders: TGdriveItemsFromServer[],
+		selectedFolderToCopy: ISelectedItem,
+	) {
+		const selectedFolderToCopyParsable = JSON.stringify(selectedFolderToCopy);
+
+		for (const folder of folders) {
+			const folderName = CardService.newTextParagraph().setText(folder.name);
+			const viewChildrenBtnAction = CardService.newAction()
+				.setFunctionName("renderSelectCopyFolderDestinationCardPg")
+				.setParameters({
+					parentFolderId: folder.id,
+					selectedFolderToCopyParsable: selectedFolderToCopyParsable,
+				});
+			const selectBtnAction = CardService.newAction()
+				.setFunctionName("handleSelectFolderBtnClick")
+				.setParameters({
+					copyDestinationFolderId: folder.id,
+					selectedFolderToCopyParsable: selectedFolderToCopyParsable,
+					// put the path to the target folder here
+					copyDestinationFolderName: folder.name,
+				});
+			const selectFolderForCopyDestinationBtn = CardService.newTextButton()
+				.setText("Select")
+				.setOnClickAction(selectBtnAction);
+			const viewFolderChildrenBtn = CardService.newTextButton()
+				.setText("View Children")
+				.setBackgroundColor(COLORS.SMOKEY_GREY)
+				.setOnClickAction(viewChildrenBtnAction);
+			const folderCardSection = CardService.newCardSection()
+				.addWidget(folderName)
+				.addWidget(selectFolderForCopyDestinationBtn)
+				.addWidget(viewFolderChildrenBtn);
+
+			selectableFoldersCard.addSection(folderCardSection);
+		}
+	}
+
 	function constructSelectableCopyFolderDestinationCard(
 		displayedSelectableFolders: TGdriveItemsFromServer[],
 		nextPageToken: string,
@@ -30,6 +69,7 @@ const helperFnsSelectFolderCopyDestination = (() => {
 
 			selectableFolderCopyDestinationCard.addSection(viewMoreFolderSection);
 		}
+
 		const selectedFolderToCopy = JSON.parse(
 			selectedFolderToCopyParsable,
 		) as ISelectedItem;
@@ -90,5 +130,6 @@ const helperFnsSelectFolderCopyDestination = (() => {
 
 	return {
 		constructSelectableCopyFolderDestinationCard,
+		addFolderSections,
 	};
 })();
